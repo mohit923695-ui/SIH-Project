@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | SkillBridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: '#1a56db',
+                        secondary: '#FF6B35',
+                        success: '#059669',
+                        dark: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f0f4f8; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .nav-item.active { background-color: #eff6ff; color: #1a56db; border-right: 3px solid #1a56db; }
+        .modal { display: none; }
+        .modal.active { display: flex; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden text-slate-800 font-sans">
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col h-full flex-shrink-0 z-10 shadow-sm">
+        <div class="p-6 flex items-center gap-3 border-b border-slate-100">
+            <div class="bg-primary text-white p-2 rounded-lg">
+                <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-xl text-dark leading-tight">SkillBridge</h1>
+                <p class="text-xs text-slate-500">Student Portal</p>
+            </div>
+        </div>
+        
+        <div class="p-6 border-b border-slate-100">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 rounded-full bg-blue-100 text-primary flex items-center justify-center font-bold text-lg border-2 border-primary">
+                    AS
+                </div>
+                <div>
+                    <h2 class="font-bold text-sm text-dark">Arjun Sharma</h2>
+                    <p class="text-xs text-slate-500">B.Tech CSE, IIT Roorkee</p>
+                </div>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2 mb-1">
+                <div class="bg-secondary h-2 rounded-full" style="width: 78%"></div>
+            </div>
+            <p class="text-xs text-slate-500 text-right">Profile Completion: 78%</p>
+        </div>
+
+        <nav class="flex-1 py-4 overflow-y-auto">
+            <ul class="space-y-1">
+                <li><a href="#" class="nav-item active flex items-center gap-3 px-6 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" data-tab="tab-dashboard"><i data-lucide="home" class="w-5 h-5"></i> Dashboard</a></li>
+                <li><a href="#" class="nav-item flex items-center gap-3 px-6 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" data-tab="tab-skills"><i data-lucide="zap" class="w-5 h-5"></i> My Skills</a></li>
+                <li><a href="#" class="nav-item flex items-center gap-3 px-6 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" data-tab="tab-internships"><i data-lucide="briefcase" class="w-5 h-5"></i> Internships</a></li>
+                <li><a href="#" class="nav-item flex items-center gap-3 px-6 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors"><i data-lucide="clipboard-list" class="w-5 h-5"></i> Applications</a></li>
+                <li><a href="#" class="nav-item flex items-center gap-3 px-6 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" data-tab="tab-career"><i data-lucide="map" class="w-5 h-5"></i> Career Path</a></li>
+                <li><a href="#" class="nav-item flex items-center gap-3 px-6 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors"><i data-lucide="award" class="w-5 h-5"></i> Certifications</a></li>
+                <li><a href="#" class="nav-item flex items-center justify-between px-6 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors">
+                    <div class="flex items-center gap-3"><i data-lucide="message-square" class="w-5 h-5"></i> Messages</div>
+                    <span class="bg-secondary text-white text-xs font-bold px-2 py-0.5 rounded-full">3</span>
+                </a></li>
+                <li><a href="#" class="nav-item flex items-center gap-3 px-6 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors"><i data-lucide="settings" class="w-5 h-5"></i> Settings</a></li>
+            </ul>
+        </nav>
+
+        <div class="p-4 border-t border-slate-200 space-y-2">
+            <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-800"><i data-lucide="log-out" class="w-4 h-4"></i> Logout</a>
+            <a href="index.html" class="flex items-center gap-3 px-4 py-2 text-sm font-medium text-primary hover:underline"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Home</a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
+        
+        <!-- TOP BAR -->
+        <header class="bg-white px-8 py-4 flex items-center justify-between shadow-sm z-10 shrink-0">
+            <div>
+                <h2 class="text-xl font-bold text-dark flex items-center gap-2">Good evening, Arjun <span class="text-2xl">👋</span></h2>
+                <p class="text-sm text-slate-500 mt-1" id="current-date">Sep 4, 2026</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="relative p-2 text-slate-400 hover:text-slate-600 bg-slate-50 rounded-full">
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                    <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                </button>
+                <div class="h-6 w-px bg-slate-200"></div>
+                <button class="px-4 py-2 bg-slate-100 text-slate-700 font-medium text-sm rounded-lg hover:bg-slate-200 transition-colors">Update Skills</button>
+                <button class="px-4 py-2 bg-primary text-white font-medium text-sm rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200">Browse Internships</button>
+            </div>
+        </header>
+
+        <!-- SCROLLABLE AREA -->
+        <div class="flex-1 overflow-y-auto p-8 relative">
+            
+            <!-- TAB 1: DASHBOARD -->
+            <div id="tab-dashboard" class="tab-content active space-y-8">
+                
+                <!-- Overview Cards -->
+                <div class="grid grid-cols-4 gap-6">
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex items-center gap-4">
+                        <div class="p-3 bg-blue-50 text-primary rounded-lg"><i data-lucide="file-text" class="w-6 h-6"></i></div>
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium">Active Applications</p>
+                            <div class="flex items-baseline gap-2">
+                                <h3 class="text-2xl font-bold text-dark">7</h3>
+                                <span class="text-xs font-medium text-success flex items-center"><i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> up 2</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex items-center gap-4">
+                        <div class="p-3 bg-orange-50 text-secondary rounded-lg"><i data-lucide="pie-chart" class="w-6 h-6"></i></div>
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium">Profile Match Avg</p>
+                            <div class="flex items-baseline gap-2">
+                                <h3 class="text-2xl font-bold text-dark">84%</h3>
+                                <span class="text-xs font-medium text-success flex items-center"><i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +5%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex items-center gap-4">
+                        <div class="p-3 bg-green-50 text-success rounded-lg"><i data-lucide="zap" class="w-6 h-6"></i></div>
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium">Skills Added</p>
+                            <div class="flex items-baseline gap-2">
+                                <h3 class="text-2xl font-bold text-dark">23</h3>
+                                <span class="text-xs font-medium text-slate-400">3 this month</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex items-center gap-4">
+                        <div class="p-3 bg-purple-50 text-purple-600 rounded-lg"><i data-lucide="phone-call" class="w-6 h-6"></i></div>
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium">Interview Calls</p>
+                            <div class="flex items-baseline gap-2">
+                                <h3 class="text-2xl font-bold text-dark">2</h3>
+                                <span class="text-xs font-medium text-slate-400">this week</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2 Col Layout: Radar + AI Gap -->
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Left: Radar -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-dark text-lg">Your Skill Profile</h3>
+                            <select id="role-select" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary text-slate-600">
+                                <option value="sde">Software Development Engineer</option>
+                                <option value="ds">Data Scientist</option>
+                                <option value="devops">Cloud/DevOps Engineer</option>
+                                <option value="pm">Product Manager</option>
+                            </select>
+                        </div>
+                        <div class="w-full h-[300px] flex justify-center">
+                            <canvas id="skillRadarChart"></canvas>
+                        </div>
+                        <div class="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg text-sm text-blue-800 flex items-start gap-2">
+                            <i data-lucide="info" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                            <p id="skill-gap-text">You need 28% more in Cloud/DevOps to match SDE requirements.</p>
+                        </div>
+                    </div>
+
+                    <!-- Right: AI Gap Analyzer -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm flex flex-col">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-dark text-lg flex items-center gap-2"><i data-lucide="cpu" class="w-5 h-5 text-primary"></i> AI Skill Gap Analyzer</h3>
+                        </div>
+                        
+                        <div class="space-y-4 flex-1">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-medium text-slate-700">Cloud/DevOps</span>
+                                    <span class="text-red-500 font-medium">Gap: 35% 🔴</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2">
+                                    <div class="bg-primary h-2 rounded-l-full" style="width: 45%"></div><div class="bg-slate-300 h-2 rounded-r-full inline-block border-l border-white" style="width: 35%"></div>
+                                </div>
+                                <p class="text-xs text-slate-500 mt-1">You: 45% | Required: 80%</p>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-medium text-slate-700">System Design</span>
+                                    <span class="text-yellow-500 font-medium">Gap: 25% 🟡</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2">
+                                    <div class="bg-primary h-2 rounded-l-full" style="width: 50%"></div><div class="bg-slate-300 h-2 rounded-r-full inline-block border-l border-white" style="width: 25%"></div>
+                                </div>
+                                <p class="text-xs text-slate-500 mt-1">You: 50% | Required: 75%</p>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-medium text-slate-700">Machine Learning</span>
+                                    <span class="text-green-500 font-medium">Gap: 10% 🟢</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2">
+                                    <div class="bg-primary h-2 rounded-l-full" style="width: 60%"></div><div class="bg-slate-300 h-2 rounded-r-full inline-block border-l border-white" style="width: 10%"></div>
+                                </div>
+                                <p class="text-xs text-slate-500 mt-1">You: 60% | Required: 70%</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-6 border-t border-slate-100">
+                            <h4 class="text-sm font-bold text-slate-800 mb-3">AI Recommended Actions</h4>
+                            <ul class="space-y-2 mb-4">
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary mt-0.5 shrink-0"></i> Take 'AWS Cloud Practitioner' course (Coursera)</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary mt-0.5 shrink-0"></i> Complete 2 System Design mock interviews</li>
+                            </ul>
+                            <button onclick="document.getElementById('roadmapModal').classList.add('active')" class="w-full py-2.5 bg-slate-900 text-white font-medium text-sm rounded-lg hover:bg-slate-800 transition-colors flex justify-center items-center gap-2">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-yellow-300"></i> Generate Learning Roadmap
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Internship Recommendations -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-dark text-lg">Best Matches For You</h3>
+                        <a href="#" class="text-sm text-primary font-medium hover:underline" onclick="document.querySelector('[data-tab=\'tab-internships\']').click()">View all</a>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Card 1 -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center font-bold text-blue-600">G</div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm">ML Engineer Intern</h4>
+                                        <p class="text-xs text-slate-500">Google</p>
+                                    </div>
+                                </div>
+                                <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full border border-green-200">96% Match</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-y-2 mb-4">
+                                <div class="flex items-center gap-1.5 text-xs text-slate-600"><i data-lucide="indian-rupee" class="w-3.5 h-3.5 text-slate-400"></i> ₹80,000/mo</div>
+                                <div class="flex items-center gap-1.5 text-xs text-slate-600"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i> Bangalore</div>
+                                <div class="flex items-center gap-1.5 text-xs text-slate-600"><i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i> 6 months</div>
+                            </div>
+                            <div class="flex gap-1.5 mb-4 flex-wrap">
+                                <span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">Python</span>
+                                <span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">TensorFlow</span>
+                                <span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">ML</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-1.5 bg-primary text-white text-xs font-medium rounded-lg hover:bg-blue-700">Apply Now</button>
+                                <button class="p-1.5 border border-slate-200 text-slate-500 rounded-lg hover:bg-slate-50"><i data-lucide="bookmark" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                        <!-- Card 2 -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center font-bold text-yellow-600">F</div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm">Backend Dev Intern</h4>
+                                        <p class="text-xs text-slate-500">Flipkart</p>
+                                    </div>
+                                </div>
+                                <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full border border-green-200">91% Match</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-y-2 mb-4">
+                                <div class="flex items-center gap-1.5 text-xs text-slate-600"><i data-lucide="indian-rupee" class="w-3.5 h-3.5 text-slate-400"></i> ₹50,000/mo</div>
+                                <div class="flex items-center gap-1.5 text-xs text-slate-600"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i> Bangalore</div>
+                                <div class="flex items-center gap-1.5 text-xs text-slate-600"><i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i> 3 months</div>
+                            </div>
+                            <div class="flex gap-1.5 mb-4 flex-wrap">
+                                <span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">Java</span>
+                                <span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">Spring Boot</span>
+                                <span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">SQL</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-1.5 bg-primary text-white text-xs font-medium rounded-lg hover:bg-blue-700">Apply Now</button>
+                                <button class="p-1.5 border border-slate-200 text-slate-500 rounded-lg hover:bg-slate-50"><i data-lucide="bookmark" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                        <!-- Card 3 -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center font-bold text-green-700">D</div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm">Data Analyst Intern</h4>
+                                        <p class="text-xs text-slate-500">Deloitte</p>
+                                    </div>
+                                </div>
+                                <span class="bg-lime-100 text-lime-700 text-xs font-bold px-2 py-1 rounded-full border border-lime-200">87% Match</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-y-2 mb-4">
+                                <div class="flex items-center gap-1.5 text-xs text-slate-600"><i data-lucide="indian-rupee" class="w-3.5 h-3.5 text-slate-400"></i> ₹35,000/mo</div>
+                                <div class="flex items-center gap-1.5 text-xs text-slate-600"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i> Mumbai</div>
+                                <div class="flex items-center gap-1.5 text-xs text-slate-600"><i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i> 4 months</div>
+                            </div>
+                            <div class="flex gap-1.5 mb-4 flex-wrap">
+                                <span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">Python</span>
+                                <span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">SQL</span>
+                                <span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">Tableau</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-1.5 bg-primary text-white text-xs font-medium rounded-lg hover:bg-blue-700">Apply Now</button>
+                                <button class="p-1.5 border border-slate-200 text-slate-500 rounded-lg hover:bg-slate-50"><i data-lucide="bookmark" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                        <!-- Card 4 -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center font-bold text-orange-600">A</div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm">Cloud Engineer Intern</h4>
+                                        <p class="text-xs text-slate-500">Amazon AWS</p>
+                                    </div>
+                                </div>
+                                <span class="bg-lime-100 text-lime-700 text-xs font-bold px-2 py-1 rounded-full border border-lime-200">83% Match</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-y-2 mb-4">
+                                <div class="flex items-center gap-1.5 text-xs text-slate-600"><i data-lucide="indian-rupee" class="w-3.5 h-3.5 text-slate-400"></i> ₹60,000/mo</div>
+                                <div class="flex items-center gap-1.5 text-xs text-slate-600"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i> Hyderabad</div>
+                                <div class="flex items-center gap-1.5 text-xs text-slate-600"><i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i> 6 months</div>
+                            </div>
+                            <div class="flex gap-1.5 mb-4 flex-wrap">
+                                <span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">AWS</span>
+                                <span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">Linux</span>
+                                <span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">Networking</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-1.5 bg-primary text-white text-xs font-medium rounded-lg hover:bg-blue-700">Apply Now</button>
+                                <button class="p-1.5 border border-slate-200 text-slate-500 rounded-lg hover:bg-slate-50"><i data-lucide="bookmark" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Application Pipeline Kanban -->
+                <div>
+                    <h3 class="font-bold text-dark text-lg mb-4">Application Tracker</h3>
+                    <div class="grid grid-cols-4 gap-4">
+                        <!-- Column 1 -->
+                        <div class="bg-slate-100 rounded-xl p-3 flex flex-col h-full min-h-[300px]">
+                            <div class="flex items-center justify-between mb-3 px-1">
+                                <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider">Applied</h4>
+                                <span class="bg-slate-200 text-slate-600 text-xs font-bold px-2 py-0.5 rounded-full">3</span>
+                            </div>
+                            <div class="space-y-3 cursor-grab active:cursor-grabbing">
+                                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm border-l-4 border-l-slate-400">
+                                    <h5 class="text-sm font-bold text-slate-800">ML Intern</h5>
+                                    <p class="text-xs text-slate-500 mb-2">Google</p>
+                                    <span class="text-[10px] text-slate-400 flex items-center"><i data-lucide="clock" class="w-3 h-3 mr-1"></i> Applied 2d ago</span>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm border-l-4 border-l-slate-400">
+                                    <h5 class="text-sm font-bold text-slate-800">React Dev</h5>
+                                    <p class="text-xs text-slate-500 mb-2">Infosys</p>
+                                    <span class="text-[10px] text-slate-400 flex items-center"><i data-lucide="clock" class="w-3 h-3 mr-1"></i> Applied 5d ago</span>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm border-l-4 border-l-slate-400">
+                                    <h5 class="text-sm font-bold text-slate-800">Data Analyst</h5>
+                                    <p class="text-xs text-slate-500 mb-2">TCS</p>
+                                    <span class="text-[10px] text-slate-400 flex items-center"><i data-lucide="clock" class="w-3 h-3 mr-1"></i> Applied 1w ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Column 2 -->
+                        <div class="bg-slate-100 rounded-xl p-3 flex flex-col h-full min-h-[300px]">
+                            <div class="flex items-center justify-between mb-3 px-1">
+                                <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider">Shortlisted</h4>
+                                <span class="bg-slate-200 text-slate-600 text-xs font-bold px-2 py-0.5 rounded-full">2</span>
+                            </div>
+                            <div class="space-y-3 cursor-grab">
+                                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm border-l-4 border-l-yellow-400">
+                                    <h5 class="text-sm font-bold text-slate-800">Backend Intern</h5>
+                                    <p class="text-xs text-slate-500 mb-2">Flipkart</p>
+                                    <span class="text-[10px] text-yellow-600 flex items-center font-medium"><i data-lucide="alert-circle" class="w-3 h-3 mr-1"></i> Action needed</span>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm border-l-4 border-l-yellow-400">
+                                    <h5 class="text-sm font-bold text-slate-800">Cloud Intern</h5>
+                                    <p class="text-xs text-slate-500 mb-2">Wipro</p>
+                                    <span class="text-[10px] text-slate-400 flex items-center"><i data-lucide="check" class="w-3 h-3 mr-1"></i> Assignment submitted</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Column 3 -->
+                        <div class="bg-slate-100 rounded-xl p-3 flex flex-col h-full min-h-[300px]">
+                            <div class="flex items-center justify-between mb-3 px-1">
+                                <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider">Interview</h4>
+                                <span class="bg-slate-200 text-slate-600 text-xs font-bold px-2 py-0.5 rounded-full">1</span>
+                            </div>
+                            <div class="space-y-3 cursor-grab">
+                                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm border-l-4 border-l-blue-500 relative">
+                                    <h5 class="text-sm font-bold text-slate-800">Cloud Engineer</h5>
+                                    <p class="text-xs text-slate-500 mb-2">Amazon AWS</p>
+                                    <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded flex items-center w-fit"><i data-lucide="calendar" class="w-3 h-3 mr-1"></i> Sep 10, 10:00 AM</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Column 4 -->
+                        <div class="bg-slate-100 rounded-xl p-3 flex flex-col h-full min-h-[300px]">
+                            <div class="flex items-center justify-between mb-3 px-1">
+                                <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider">Offered</h4>
+                                <span class="bg-slate-200 text-slate-600 text-xs font-bold px-2 py-0.5 rounded-full">1</span>
+                            </div>
+                            <div class="space-y-3 cursor-grab">
+                                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm border-l-4 border-l-green-500">
+                                    <h5 class="text-sm font-bold text-slate-800">Frontend Intern</h5>
+                                    <p class="text-xs text-slate-500 mb-2">Juspay</p>
+                                    <span class="text-[10px] text-green-600 font-bold flex items-center"><i data-lucide="party-popper" class="w-3 h-3 mr-1"></i> ₹45,000/mo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB 2: MY SKILLS -->
+            <div id="tab-skills" class="tab-content space-y-8">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-dark">My Skills & Proficiency</h2>
+                        <p class="text-sm text-slate-500">Manage your skill portfolio and take assessments to verify them.</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="document.getElementById('assessmentModal').classList.add('active')" class="px-4 py-2 border border-slate-300 text-slate-700 font-medium text-sm rounded-lg hover:bg-slate-50 transition-colors">Take Assessment</button>
+                        <button onclick="document.getElementById('addSkillModal').classList.add('active')" class="px-4 py-2 bg-primary text-white font-medium text-sm rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Add Skill</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Category 1 -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                        <h3 class="font-bold text-lg text-dark mb-4 flex items-center gap-2"><i data-lucide="code" class="w-5 h-5 text-primary"></i> Programming Languages</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">Python</span><span class="text-slate-500">90%</span></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-primary h-2 rounded-full" style="width: 90%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">JavaScript</span><span class="text-slate-500">85%</span></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-primary h-2 rounded-full" style="width: 85%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">Java</span><span class="text-slate-500">75%</span></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-primary h-2 rounded-full" style="width: 75%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">C++</span><span class="text-slate-500">60%</span></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-primary h-2 rounded-full" style="width: 60%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Category 2 -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                        <h3 class="font-bold text-lg text-dark mb-4 flex items-center gap-2"><i data-lucide="blocks" class="w-5 h-5 text-secondary"></i> Frameworks</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">React</span><span class="text-slate-500">80%</span></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-secondary h-2 rounded-full" style="width: 80%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">Flask</span><span class="text-slate-500">65%</span></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-secondary h-2 rounded-full" style="width: 65%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">Node.js</span><span class="text-slate-500">55%</span></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-secondary h-2 rounded-full" style="width: 55%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category 3 -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                        <h3 class="font-bold text-lg text-dark mb-4 flex items-center gap-2"><i data-lucide="wrench" class="w-5 h-5 text-purple-500"></i> Tools</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">Git</span><span class="text-slate-500">88%</span></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-purple-500 h-2 rounded-full" style="width: 88%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">Docker</span><span class="text-slate-500">50%</span></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-purple-500 h-2 rounded-full" style="width: 50%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">Kubernetes</span><span class="text-slate-500">30%</span></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-purple-500 h-2 rounded-full" style="width: 30%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category 4 -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                        <h3 class="font-bold text-lg text-dark mb-4 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-success"></i> Soft Skills</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">Communication</span><span class="text-slate-500">80%</span></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-success h-2 rounded-full" style="width: 80%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">Leadership</span><span class="text-slate-500">65%</span></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-success h-2 rounded-full" style="width: 65%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-lg text-dark mb-4">Verified Badges</h3>
+                    <div class="flex gap-4">
+                        <div class="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-xl border border-slate-200 w-32">
+                            <div class="w-12 h-12 rounded-full bg-blue-100 text-primary flex items-center justify-center mb-2"><i data-lucide="check-circle" class="w-6 h-6"></i></div>
+                            <span class="text-xs font-bold text-center">Python Pro</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-xl border border-slate-200 w-32">
+                            <div class="w-12 h-12 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center mb-2"><i data-lucide="award" class="w-6 h-6"></i></div>
+                            <span class="text-xs font-bold text-center">Data Struct Top 10%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: INTERNSHIPS -->
+            <div id="tab-internships" class="tab-content space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-dark">Find Internships</h2>
+                    <p class="text-sm text-slate-500">Discover opportunities matched to your skill profile.</p>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap gap-4 items-center">
+                    <div class="flex-1 min-w-[200px] relative">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+                        <input type="text" placeholder="Search role, company..." class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-primary">
+                    </div>
+                    <select class="text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:border-primary text-slate-600">
+                        <option>Domain: All</option>
+                        <option>Tech</option>
+                        <option>Data Science</option>
+                        <option>Design</option>
+                    </select>
+                    <select class="text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:border-primary text-slate-600">
+                        <option>Duration: All</option>
+                        <option>1-3 months</option>
+                        <option>3-6 months</option>
+                        <option>6+ months</option>
+                    </select>
+                    <select class="text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:border-primary text-slate-600">
+                        <option>Stipend: All</option>
+                        <option>< ₹20k</option>
+                        <option>₹20k-50k</option>
+                        <option>₹50k+</option>
+                    </select>
+                    <select class="text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:border-primary text-slate-600">
+                        <option>Location: All</option>
+                        <option>Bangalore</option>
+                        <option>Mumbai</option>
+                        <option>Remote</option>
+                    </select>
+                    <label class="flex items-center gap-2 text-sm text-slate-600">
+                        <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary h-4 w-4" checked> Show 80%+ Match
+                    </label>
+                </div>
+
+                <!-- Results Grid (8 cards) -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Generate 8 cards similar to dashboard -->
+                    <script>
+                        const companies = [
+                            {n: 'ML Engineer Intern', c: 'Google', l: 'G', bg: 'bg-blue-100 text-blue-600', m: '96%', s: '₹80,000/mo', loc: 'Bangalore'},
+                            {n: 'Backend Dev Intern', c: 'Flipkart', l: 'F', bg: 'bg-yellow-100 text-yellow-600', m: '91%', s: '₹50,000/mo', loc: 'Bangalore'},
+                            {n: 'Data Analyst Intern', c: 'Deloitte', l: 'D', bg: 'bg-green-100 text-green-700', m: '87%', s: '₹35,000/mo', loc: 'Mumbai'},
+                            {n: 'Cloud Eng Intern', c: 'Amazon AWS', l: 'A', bg: 'bg-orange-100 text-orange-600', m: '83%', s: '₹60,000/mo', loc: 'Hyderabad'},
+                            {n: 'Frontend Intern', c: 'Zomato', l: 'Z', bg: 'bg-red-100 text-red-600', m: '82%', s: '₹40,000/mo', loc: 'Gurugram'},
+                            {n: 'SDE Intern', c: 'Microsoft', l: 'M', bg: 'bg-blue-100 text-blue-700', m: '81%', s: '₹75,000/mo', loc: 'Hyderabad'},
+                            {n: 'DevOps Intern', c: 'PhonePe', l: 'P', bg: 'bg-purple-100 text-purple-600', m: '80%', s: '₹45,000/mo', loc: 'Remote'},
+                            {n: 'Data Scientist', c: 'IBM', l: 'I', bg: 'bg-slate-200 text-slate-700', m: '80%', s: '₹55,000/mo', loc: 'Bangalore'}
+                        ];
+                        companies.forEach(comp => {
+                            document.write(`
+                            <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg ${comp.bg} flex items-center justify-center font-bold">${comp.l}</div>
+                                        <div>
+                                            <h4 class="font-bold text-slate-800 text-sm whitespace-nowrap overflow-hidden text-ellipsis w-24">${comp.n}</h4>
+                                            <p class="text-xs text-slate-500">${comp.c}</p>
+                                        </div>
+                                    </div>
+                                    <span class="bg-lime-100 text-lime-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-lime-200">${comp.m} Match</span>
+                                </div>
+                                <div class="grid grid-cols-1 gap-y-1.5 mb-4">
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-600"><svg class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12"/><path d="M6 8h12"/><path d="M6 13h12"/><path d="M10 21V3"/><path d="M14 21V3"/></svg> ${comp.s}</div>
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-600"><svg class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${comp.loc}</div>
+                                </div>
+                                <div class="flex gap-2 mt-auto">
+                                    <button class="flex-1 py-1.5 bg-primary text-white text-xs font-medium rounded-lg hover:bg-blue-700">Apply</button>
+                                </div>
+                            </div>
+                            `);
+                        });
+                    </script>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex justify-center mt-6">
+                    <nav class="flex gap-1">
+                        <button class="p-2 border border-slate-200 rounded-lg text-slate-400 hover:bg-slate-50 disabled"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                        <button class="px-3 py-1 bg-primary text-white font-medium rounded-lg text-sm">1</button>
+                        <button class="px-3 py-1 border border-slate-200 text-slate-600 font-medium rounded-lg text-sm hover:bg-slate-50">2</button>
+                        <button class="px-3 py-1 border border-slate-200 text-slate-600 font-medium rounded-lg text-sm hover:bg-slate-50">3</button>
+                        <button class="p-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- TAB 4: CAREER PATH -->
+            <div id="tab-career" class="tab-content space-y-6 h-full flex flex-col">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-dark">Career Path Simulator</h2>
+                        <p class="text-sm text-slate-500">Visualize your roadmap to your dream role.</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <select class="text-sm border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary text-slate-700 font-medium shadow-sm bg-white">
+                            <option>SDE (Software Development Engineer)</option>
+                            <option>Data Scientist</option>
+                            <option>ML Engineer</option>
+                            <option>Product Manager</option>
+                            <option>DevOps Engineer</option>
+                            <option>UI/UX Designer</option>
+                        </select>
+                        <button onclick="alert('Roadmap exported as PDF successfully!')" class="px-4 py-2 border border-slate-300 text-slate-700 font-medium text-sm rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Export PDF</button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-8 flex-1">
+                    <div class="relative w-full h-full max-w-4xl mx-auto py-10">
+                        <!-- Horizontal Timeline Line -->
+                        <div class="absolute top-1/2 left-0 w-full h-1 bg-slate-200 -translate-y-1/2 z-0"></div>
+                        <div class="absolute top-1/2 left-0 w-1/3 h-1 bg-primary -translate-y-1/2 z-0"></div> <!-- progress -->
+
+                        <!-- Nodes -->
+                        <div class="relative z-10 flex justify-between w-full h-full">
+                            
+                            <!-- Node 1 -->
+                            <div class="flex flex-col items-center justify-center -mt-16 w-32">
+                                <div class="w-8 h-8 rounded-full bg-primary border-4 border-white shadow-md mb-3 flex items-center justify-center text-white"><i data-lucide="check" class="w-4 h-4"></i></div>
+                                <h4 class="font-bold text-sm text-center text-slate-800">Now</h4>
+                                <p class="text-[10px] text-center text-slate-500 mt-1">Current Skills Assessed</p>
+                            </div>
+
+                            <!-- Node 2 -->
+                            <div class="flex flex-col items-center justify-center mt-16 w-32 relative">
+                                <div class="w-8 h-8 rounded-full bg-primary border-4 border-white shadow-md mb-3 flex items-center justify-center text-white"><i data-lucide="book-open" class="w-4 h-4"></i></div>
+                                <h4 class="font-bold text-sm text-center text-slate-800">Month 1-2</h4>
+                                <p class="text-[10px] text-center text-slate-500 mt-1">Foundation (DSA & Algo)</p>
+                                
+                                <div class="absolute top-full mt-4 bg-slate-50 p-3 rounded-lg border border-slate-200 w-48 shadow-sm">
+                                    <p class="text-xs font-bold mb-2 text-slate-700">Resources:</p>
+                                    <ul class="text-[10px] space-y-1 text-primary">
+                                        <li><a href="#" class="hover:underline flex items-center gap-1"><i data-lucide="link" class="w-3 h-3"></i> NPTEL DSA Course</a></li>
+                                        <li><a href="#" class="hover:underline flex items-center gap-1"><i data-lucide="link" class="w-3 h-3"></i> LeetCode Blind 75</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Node 3 -->
+                            <div class="flex flex-col items-center justify-center -mt-16 w-32 relative">
+                                <div class="w-8 h-8 rounded-full bg-white border-4 border-primary shadow-md mb-3"></div>
+                                <h4 class="font-bold text-sm text-center text-slate-800">Month 3-4</h4>
+                                <p class="text-[10px] text-center text-slate-500 mt-1">Core Skills (Projects)</p>
+                                
+                                <div class="absolute bottom-full mb-4 bg-slate-50 p-3 rounded-lg border border-slate-200 w-48 shadow-sm">
+                                    <p class="text-xs font-bold mb-2 text-slate-700">Tasks:</p>
+                                    <ul class="text-[10px] space-y-1 text-slate-600">
+                                        <li>• Build full-stack e-commerce app</li>
+                                        <li>• Contribute to 1 open source project</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Node 4 -->
+                            <div class="flex flex-col items-center justify-center mt-16 w-32 relative">
+                                <div class="w-8 h-8 rounded-full bg-white border-4 border-slate-300 shadow-sm mb-3"></div>
+                                <h4 class="font-bold text-sm text-center text-slate-500">Month 5-6</h4>
+                                <p class="text-[10px] text-center text-slate-400 mt-1">Advanced System Design</p>
+                            </div>
+
+                            <!-- Node 5 -->
+                            <div class="flex flex-col items-center justify-center -mt-16 w-32">
+                                <div class="w-8 h-8 rounded-full bg-white border-4 border-slate-300 shadow-sm mb-3"></div>
+                                <h4 class="font-bold text-sm text-center text-slate-500">Month 7-8</h4>
+                                <p class="text-[10px] text-center text-slate-400 mt-1">Internship Ready</p>
+                            </div>
+
+                            <!-- Node 6 -->
+                            <div class="flex flex-col items-center justify-center mt-16 w-32">
+                                <div class="w-8 h-8 rounded-full bg-white border-4 border-slate-300 shadow-sm mb-3"></div>
+                                <h4 class="font-bold text-sm text-center text-slate-500">Month 9-12</h4>
+                                <p class="text-[10px] text-center text-slate-400 mt-1">Placement Ready</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODALS -->
+    <!-- Roadmap Modal -->
+    <div id="roadmapModal" class="modal fixed inset-0 bg-slate-900/50 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-lg text-dark flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5 text-yellow-500"></i> AI Generated Roadmap</h3>
+                <button onclick="document.getElementById('roadmapModal').classList.remove('active')" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <p class="text-sm text-slate-600 mb-4">Based on your current skill gap for <strong>Software Development Engineer</strong>, here is a personalized 12-week plan:</p>
+                
+                <div class="space-y-4">
+                    <div class="flex gap-4">
+                        <div class="flex flex-col items-center">
+                            <div class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold z-10">1</div>
+                            <div class="w-px h-full bg-slate-200 mt-2"></div>
+                        </div>
+                        <div class="pb-4">
+                            <h4 class="font-bold text-sm text-slate-800">Weeks 1-4: Cloud Fundamentals</h4>
+                            <p class="text-xs text-slate-500 mt-1">Focus on AWS Cloud Practitioner cert. Learn EC2, S3, IAM, and basic networking.</p>
+                            <a href="#" class="inline-block mt-2 text-xs text-primary font-medium hover:underline">View AWS Course →</a>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-4">
+                        <div class="flex flex-col items-center">
+                            <div class="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold z-10">2</div>
+                            <div class="w-px h-full bg-slate-200 mt-2"></div>
+                        </div>
+                        <div class="pb-4">
+                            <h4 class="font-bold text-sm text-slate-800">Weeks 5-8: System Design Basics</h4>
+                            <p class="text-xs text-slate-500 mt-1">Study horizontal vs vertical scaling, load balancers, caching, and database sharding.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="flex flex-col items-center">
+                            <div class="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold z-10">3</div>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800">Weeks 9-12: Mock Interviews & Projects</h4>
+                            <p class="text-xs text-slate-500 mt-1">Deploy a scalable application on AWS using your new skills. Do 3 mock interviews.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-100 bg-slate-50">
+                <button onclick="document.getElementById('roadmapModal').classList.remove('active')" class="w-full py-2 bg-primary text-white font-medium text-sm rounded-lg hover:bg-blue-700">Save to My Career Path</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Skill Modal -->
+    <div id="addSkillModal" class="modal fixed inset-0 bg-slate-900/50 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-bold text-lg text-dark">Add New Skill</h3>
+                <button onclick="document.getElementById('addSkillModal').classList.remove('active')" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Select Skill</label>
+                    <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary">
+                        <option>Go (Golang)</option>
+                        <option>Ruby</option>
+                        <option>PostgreSQL</option>
+                        <option>Figma</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Proficiency Level (Estimated)</label>
+                    <input type="range" min="0" max="100" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary">
+                    <div class="flex justify-between text-xs text-slate-500 mt-1">
+                        <span>Beginner</span>
+                        <span>Intermediate</span>
+                        <span>Expert</span>
+                    </div>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 flex items-start gap-2">
+                    <i data-lucide="info" class="w-4 h-4 text-blue-500 mt-0.5 shrink-0"></i>
+                    <p class="text-xs text-blue-800">Note: Self-assessed skills have less weight in matching until verified via our Skill Assessment tests.</p>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-100 flex justify-end gap-3">
+                <button onclick="document.getElementById('addSkillModal').classList.remove('active')" class="px-4 py-2 border border-slate-300 text-slate-700 font-medium text-sm rounded-lg hover:bg-slate-50">Cancel</button>
+                <button onclick="document.getElementById('addSkillModal').classList.remove('active')" class="px-4 py-2 bg-primary text-white font-medium text-sm rounded-lg hover:bg-blue-700">Add Skill</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assessment Modal -->
+    <div id="assessmentModal" class="modal fixed inset-0 bg-slate-900/50 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-bold text-lg text-dark">Skill Assessment</h3>
+                <button onclick="document.getElementById('assessmentModal').classList.remove('active')" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 text-center space-y-4">
+                <div class="w-16 h-16 bg-blue-100 text-primary rounded-full flex items-center justify-center mx-auto">
+                    <i data-lucide="clipboard-check" class="w-8 h-8"></i>
+                </div>
+                <h4 class="font-bold text-slate-800">Ready to verify your skills?</h4>
+                <p class="text-sm text-slate-500">Take a 20-minute adaptive test to verify your proficiency in <strong class="text-slate-700">Python</strong>. Verifying your skills increases your match rate by up to 40%.</p>
+            </div>
+            <div class="p-4 border-t border-slate-100 flex justify-center">
+                <button onclick="document.getElementById('assessmentModal').classList.remove('active'); alert('Starting assessment environment...')" class="w-full py-2 bg-primary text-white font-medium text-sm rounded-lg hover:bg-blue-700">Start Test Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Tabs Logic
+        document.querySelectorAll('.nav-item[data-tab]').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Remove active from all tabs & navs
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active', 'bg-slate-50', 'border-r', 'border-primary'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active to clicked
+                tab.classList.add('active');
+                document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+            });
+        });
+
+        // Chart.js Radar Chart
+        const ctx = document.getElementById('skillRadarChart').getContext('2d');
+        
+        // Base Data
+        const userData = [85, 75, 60, 45, 80, 88, 70, 50];
+        const rolesData = {
+            sde: { data: [90, 85, 40, 60, 70, 90, 75, 75], label: 'SDE Required', gap: 'You need 25% more in System Design and 15% more in Cloud/DevOps to match SDE requirements.' },
+            ds: { data: [80, 60, 90, 40, 70, 80, 85, 40], label: 'Data Scientist Req', gap: 'You need 30% more in Machine Learning to match Data Scientist requirements.' },
+            devops: { data: [70, 50, 30, 95, 75, 80, 60, 80], label: 'DevOps Required', gap: 'You need 50% more in Cloud/DevOps to match DevOps Engineer requirements.' },
+            pm: { data: [40, 30, 20, 20, 95, 90, 40, 60], label: 'PM Required', gap: 'You need 15% more in Communication to match Product Manager requirements.' }
+        };
+
+        let radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Programming', 'Data Structures', 'Machine Learning', 'Cloud/DevOps', 'Communication', 'Problem Solving', 'Database', 'System Design'],
+                datasets: [
+                    {
+                        label: 'Your Level',
+                        data: userData,
+                        backgroundColor: 'rgba(26, 86, 219, 0.2)',
+                        borderColor: 'rgba(26, 86, 219, 1)',
+                        pointBackgroundColor: 'rgba(26, 86, 219, 1)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: rolesData['sde'].label,
+                        data: rolesData['sde'].data,
+                        backgroundColor: 'rgba(255, 107, 53, 0)',
+                        borderColor: 'rgba(255, 107, 53, 1)',
+                        borderDash: [5, 5],
+                        borderWidth: 2,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(0,0,0,0.1)' },
+                        grid: { color: 'rgba(0,0,0,0.1)' },
+                        pointLabels: { font: { size: 10, family: 'Inter' }, color: '#64748b' },
+                        ticks: { display: false, min: 0, max: 100 }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, family: 'Inter' } } }
+                }
+            }
+        });
+
+        // Handle Role Change
+        document.getElementById('role-select').addEventListener('change', function(e) {
+            const role = e.target.value;
+            radarChart.data.datasets[1].data = rolesData[role].data;
+            radarChart.data.datasets[1].label = rolesData[role].label;
+            radarChart.update();
+            document.getElementById('skill-gap-text').innerText = rolesData[role].gap;
+        });
+    </script>
+</body>
+</html>

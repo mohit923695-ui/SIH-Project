@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillBridge | SIH 2026 Problem 26044</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0f4f8; }
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, #1a56db, #FF6B35);
+        }
+        .bg-gradient-sih {
+            background: linear-gradient(135deg, #1a56db 0%, #FF6B35 100%);
+        }
+        
+        /* Skills ticker animation */
+        .skills-ticker-wrapper {
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+        .skills-ticker {
+            display: inline-block;
+            animation: ticker 40s linear infinite;
+        }
+        .skills-ticker:hover {
+            animation-play-state: paused;
+        }
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Glassmorphism */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Floating animations */
+        .float-1 { animation: float 6s ease-in-out infinite; }
+        .float-2 { animation: float 8s ease-in-out infinite reverse; }
+        .float-3 { animation: float 7s ease-in-out infinite 2s; }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Modal transitions */
+        .modal-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            transform: scale(0.95) translateY(20px);
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        /* Hide scrollbar for tabs */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased overflow-x-hidden">
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4 glass-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="lightbulb" class="w-8 h-8 text-blue-600"></i>
+                    <span class="text-2xl font-bold text-gradient">SkillBridge</span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8 font-medium">
+                    <a href="#features" class="text-slate-600 hover:text-blue-600 transition-colors">Features</a>
+                    <a href="#how-it-works" class="text-slate-600 hover:text-blue-600 transition-colors">How It Works</a>
+                    <a href="#success-stories" class="text-slate-600 hover:text-blue-600 transition-colors">Success Stories</a>
+                    <a href="#about" class="text-slate-600 hover:text-blue-600 transition-colors">About</a>
+                </div>
+
+                <!-- Buttons -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <button onclick="openModal('loginModal')" class="px-5 py-2 border-2 border-blue-600 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors">
+                        Login
+                    </button>
+                    <button onclick="openModal('registerModal')" class="px-5 py-2 bg-[#FF6B35] text-white font-semibold rounded-lg hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30">
+                        Register Free
+                    </button>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-blue-600 focus:outline-none">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t mt-4">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#features" class="block px-3 py-2 text-slate-600 font-medium">Features</a>
+                <a href="#how-it-works" class="block px-3 py-2 text-slate-600 font-medium">How It Works</a>
+                <a href="#success-stories" class="block px-3 py-2 text-slate-600 font-medium">Success Stories</a>
+                <button onclick="openModal('loginModal')" class="w-full text-left block px-3 py-2 text-blue-600 font-medium">Login</button>
+                <button onclick="openModal('registerModal')" class="w-full text-left block px-3 py-2 text-[#FF6B35] font-medium">Register Free</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 z-0 opacity-20" style="background-image: radial-gradient(#1a56db 1px, transparent 1px); background-size: 30px 30px;"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex flex-col lg:flex-row items-center gap-12">
+                <!-- Text Content -->
+                <div class="w-full lg:w-1/2 space-y-8 text-center lg:text-left">
+                    <div class="inline-flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-sm border border-slate-200">
+                        <span class="w-2 h-2 rounded-full bg-[#FF6B35] animate-pulse"></span>
+                        <span class="text-sm font-semibold text-slate-700">SIH 2026 | Problem #26044</span>
+                    </div>
+                    
+                    <h1 class="text-5xl lg:text-6xl font-extrabold leading-tight">
+                        Bridge the Gap Between <span class="text-gradient">Academia & Industry</span>
+                    </h1>
+                    
+                    <p class="text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                        SkillBridge connects students, industry partners, and academicians through intelligent skill mapping, real internships, and data-driven placements.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
+                        <button onclick="openModal('registerModal')" class="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30">
+                            Get Started Free
+                        </button>
+                        <button class="w-full sm:w-auto px-8 py-3 border-2 border-slate-300 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-colors flex items-center justify-center space-x-2">
+                            <i data-lucide="play-circle" class="w-5 h-5"></i>
+                            <span>Watch Demo</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Floating Badges -->
+                <div class="w-full lg:w-1/2 relative h-[400px] lg:h-[500px]">
+                    <!-- Badge 1 -->
+                    <div class="float-1 absolute top-10 left-10 lg:left-20 bg-white p-5 rounded-2xl shadow-xl border border-slate-100 flex items-center space-x-4">
+                        <div class="p-3 bg-blue-100 rounded-lg text-blue-600">
+                            <i data-lucide="briefcase" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-slate-800">2,847</p>
+                            <p class="text-sm font-medium text-slate-500">Active Internships</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Badge 2 -->
+                    <div class="float-2 absolute top-1/2 right-10 lg:right-0 transform -translate-y-1/2 bg-white p-5 rounded-2xl shadow-xl border border-slate-100 flex items-center space-x-4">
+                        <div class="p-3 bg-orange-100 rounded-lg text-orange-600">
+                            <i data-lucide="building" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-slate-800">156</p>
+                            <p class="text-sm font-medium text-slate-500">Partner Companies</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Badge 3 -->
+                    <div class="float-3 absolute bottom-10 left-1/4 lg:left-1/3 bg-white p-5 rounded-2xl shadow-xl border border-slate-100 flex items-center space-x-4 z-20">
+                        <div class="p-3 bg-green-100 rounded-lg text-green-600">
+                            <i data-lucide="trending-up" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-slate-800">94%</p>
+                            <p class="text-sm font-medium text-slate-500">Placement Rate</p>
+                        </div>
+                    </div>
+
+                    <!-- Decorative UI element in background -->
+                    <div class="absolute inset-0 flex items-center justify-center -z-10 opacity-50">
+                        <div class="w-72 h-72 rounded-full border-4 border-blue-100 border-dashed animate-spin" style="animation-duration: 20s;"></div>
+                        <div class="absolute w-48 h-48 rounded-full border-4 border-orange-100 border-dashed animate-spin" style="animation-duration: 15s; animation-direction: reverse;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Stats Bar -->
+    <section class="bg-slate-900 py-12 relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-slate-700">
+                <div class="px-4">
+                    <p class="text-4xl font-extrabold text-white mb-2"><span class="counter" data-target="50000">0</span>+</p>
+                    <p class="text-slate-400 font-medium uppercase tracking-wider text-sm">Students Enrolled</p>
+                </div>
+                <div class="px-4">
+                    <p class="text-4xl font-extrabold text-white mb-2"><span class="counter" data-target="500">0</span>+</p>
+                    <p class="text-slate-400 font-medium uppercase tracking-wider text-sm">Industry Partners</p>
+                </div>
+                <div class="px-4">
+                    <p class="text-4xl font-extrabold text-white mb-2"><span class="counter" data-target="85">0</span>%</p>
+                    <p class="text-slate-400 font-medium uppercase tracking-wider text-sm">Skill Gap Closed</p>
+                </div>
+                <div class="px-4">
+                    <p class="text-4xl font-extrabold text-white mb-2"><span class="counter" data-target="92">0</span>%</p>
+                    <p class="text-slate-400 font-medium uppercase tracking-wider text-sm">Placement Rate</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Everything You Need, All in One Place</h2>
+                <p class="text-lg text-slate-600">A unified ecosystem designed to seamlessly connect the academic world with industry requirements.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-[#f8fafc] rounded-2xl p-8 border border-slate-100 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 group">
+                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="radar" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">AI Skill Mapping</h3>
+                    <p class="text-slate-600">Advanced radar chart analysis comparing student skills against real-time industry demands to identify precise gaps.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-[#f8fafc] rounded-2xl p-8 border border-slate-100 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 group">
+                    <div class="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center text-[#FF6B35] mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="zap" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Smart Internship Matching</h3>
+                    <p class="text-slate-600">Our AI algorithms match students to the perfect internships, providing a fit score percentage based on verified skills.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-[#f8fafc] rounded-2xl p-8 border border-slate-100 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 group">
+                    <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="map" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Career Path Simulator</h3>
+                    <p class="text-slate-600">Students can choose their dream role and receive a personalized, step-by-step roadmap to acquire necessary skills.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-[#f8fafc] rounded-2xl p-8 border border-slate-100 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 group">
+                    <div class="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="users" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Industry Collaboration</h3>
+                    <p class="text-slate-600">Companies post requirements while academicians view aggregate data to align their curriculum with market realities.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-[#f8fafc] rounded-2xl p-8 border border-slate-100 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 group">
+                    <div class="w-14 h-14 bg-rose-100 rounded-xl flex items-center justify-center text-rose-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="bar-chart-3" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Real-time Analytics</h3>
+                    <p class="text-slate-600">Comprehensive, interactive dashboards tailored for students, HR managers, and university administrators.</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-[#f8fafc] rounded-2xl p-8 border border-slate-100 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 group">
+                    <div class="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="award" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Certificate & Badge System</h3>
+                    <p class="text-slate-600">Gamified achievements to motivate students, with verifiable micro-credentials recognized by partner companies.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">How SkillBridge Works</h2>
+                <p class="text-lg text-slate-600">A tailored experience for every stakeholder in the ecosystem.</p>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="flex justify-center mb-12">
+                <div class="inline-flex bg-white rounded-full p-1 shadow-sm border border-slate-200">
+                    <button class="how-tab-btn active px-6 py-2.5 rounded-full text-sm font-semibold transition-all text-white bg-blue-600" data-target="tab-student">Student</button>
+                    <button class="how-tab-btn px-6 py-2.5 rounded-full text-sm font-semibold transition-all text-slate-600 hover:text-slate-900" data-target="tab-industry">Industry</button>
+                    <button class="how-tab-btn px-6 py-2.5 rounded-full text-sm font-semibold transition-all text-slate-600 hover:text-slate-900" data-target="tab-academician">Academician</button>
+                </div>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="relative max-w-4xl mx-auto">
+                
+                <!-- Student Tab -->
+                <div id="tab-student" class="how-tab-content block">
+                    <div class="relative border-l-4 border-blue-200 ml-6 md:ml-0 md:border-l-0">
+                        <!-- Desktop Line -->
+                        <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-blue-200 -translate-y-1/2 z-0"></div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4 relative z-10">
+                            <!-- Step 1 -->
+                            <div class="pl-8 md:pl-0 md:text-center relative">
+                                <div class="absolute md:relative left-[-42px] md:left-0 top-0 md:mx-auto w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg border-4 border-white">1</div>
+                                <h4 class="text-lg font-bold text-slate-800 mb-2">Create Profile & Map Skills</h4>
+                                <p class="text-slate-600 text-sm">Build your profile and take initial assessments to map your current skill levels.</p>
+                            </div>
+                            <!-- Step 2 -->
+                            <div class="pl-8 md:pl-0 md:text-center relative">
+                                <div class="absolute md:relative left-[-42px] md:left-0 top-0 md:mx-auto w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg border-4 border-white">2</div>
+                                <h4 class="text-lg font-bold text-slate-800 mb-2">Get AI Matches</h4>
+                                <p class="text-slate-600 text-sm">Receive personalized internship recommendations based on your skill radar.</p>
+                            </div>
+                            <!-- Step 3 -->
+                            <div class="pl-8 md:pl-0 md:text-center relative">
+                                <div class="absolute md:relative left-[-42px] md:left-0 top-0 md:mx-auto w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg border-4 border-white">3</div>
+                                <h4 class="text-lg font-bold text-slate-800 mb-2">Track & Get Placed</h4>
+                                <p class="text-slate-600 text-sm">Apply with one click, track status, and secure your dream role.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Industry Tab -->
+                <div id="tab-industry" class="how-tab-content hidden">
+                    <div class="relative border-l-4 border-orange-200 ml-6 md:ml-0 md:border-l-0">
+                        <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-orange-200 -translate-y-1/2 z-0"></div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4 relative z-10">
+                            <div class="pl-8 md:pl-0 md:text-center relative">
+                                <div class="absolute md:relative left-[-42px] md:left-0 top-0 md:mx-auto w-12 h-12 bg-[#FF6B35] text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg border-4 border-white">1</div>
+                                <h4 class="text-lg font-bold text-slate-800 mb-2">Post Requirements</h4>
+                                <p class="text-slate-600 text-sm">Define required skills and proficiency levels for jobs or internships.</p>
+                            </div>
+                            <div class="pl-8 md:pl-0 md:text-center relative">
+                                <div class="absolute md:relative left-[-42px] md:left-0 top-0 md:mx-auto w-12 h-12 bg-[#FF6B35] text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg border-4 border-white">2</div>
+                                <h4 class="text-lg font-bold text-slate-800 mb-2">Browse AI Matches</h4>
+                                <p class="text-slate-600 text-sm">Review candidates automatically ranked by their skill-fit percentage.</p>
+                            </div>
+                            <div class="pl-8 md:pl-0 md:text-center relative">
+                                <div class="absolute md:relative left-[-42px] md:left-0 top-0 md:mx-auto w-12 h-12 bg-[#FF6B35] text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg border-4 border-white">3</div>
+                                <h4 class="text-lg font-bold text-slate-800 mb-2">Collaborate with Colleges</h4>
+                                <p class="text-slate-600 text-sm">Provide feedback to shape the future talent pipeline directly with institutions.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Academician Tab -->
+                <div id="tab-academician" class="how-tab-content hidden">
+                    <div class="relative border-l-4 border-emerald-200 ml-6 md:ml-0 md:border-l-0">
+                        <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-emerald-200 -translate-y-1/2 z-0"></div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4 relative z-10">
+                            <div class="pl-8 md:pl-0 md:text-center relative">
+                                <div class="absolute md:relative left-[-42px] md:left-0 top-0 md:mx-auto w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg border-4 border-white">1</div>
+                                <h4 class="text-lg font-bold text-slate-800 mb-2">Monitor Progression</h4>
+                                <p class="text-slate-600 text-sm">Track your cohort's skill development across various domains in real-time.</p>
+                            </div>
+                            <div class="pl-8 md:pl-0 md:text-center relative">
+                                <div class="absolute md:relative left-[-42px] md:left-0 top-0 md:mx-auto w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg border-4 border-white">2</div>
+                                <h4 class="text-lg font-bold text-slate-800 mb-2">Identify Demand Gaps</h4>
+                                <p class="text-slate-600 text-sm">Analyze aggregated industry data to see which skills are trending up or down.</p>
+                            </div>
+                            <div class="pl-8 md:pl-0 md:text-center relative">
+                                <div class="absolute md:relative left-[-42px] md:left-0 top-0 md:mx-auto w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-xl mb-4 shadow-lg border-4 border-white">3</div>
+                                <h4 class="text-lg font-bold text-slate-800 mb-2">Align Curriculum</h4>
+                                <p class="text-slate-600 text-sm">Adapt coursework proactively to ensure high placement rates for your students.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Skill Domains Showcase -->
+    <section class="py-16 bg-white overflow-hidden border-y border-slate-100">
+        <div class="text-center mb-10">
+            <h2 class="text-2xl font-bold text-slate-800">Explore 200+ Skill Domains</h2>
+        </div>
+        
+        <div class="skills-ticker-wrapper">
+            <div class="skills-ticker flex space-x-4 px-4 pb-4">
+                <!-- Group 1 -->
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Python</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Machine Learning</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Data Analysis</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">React</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Node.js</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Cloud Computing</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Cybersecurity</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">UI/UX Design</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Digital Marketing</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Financial Modeling</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Supply Chain</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Ayurveda Research</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Biotechnology</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">IoT</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Blockchain</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">DevOps</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Power BI</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">SQL</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Java</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Kotlin</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Flutter</span>
+                <!-- Duplicate for infinite scroll effect -->
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Python</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Machine Learning</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Data Analysis</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">React</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Node.js</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Cloud Computing</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Cybersecurity</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">UI/UX Design</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Digital Marketing</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Financial Modeling</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Supply Chain</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Ayurveda Research</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Biotechnology</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">IoT</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Blockchain</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">DevOps</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Power BI</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">SQL</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Java</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Kotlin</span>
+                <span class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-full text-slate-700 font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors cursor-default">Flutter</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories -->
+    <section id="success-stories" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Real Impact, Real Stories</h2>
+                <p class="text-lg text-slate-600">See how SkillBridge is transforming the academic-industry landscape.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Story 1 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex text-amber-400 mb-4">
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    </div>
+                    <p class="text-slate-700 italic mb-6">"Got 3 interview calls within a week of completing the skill assessment. The AI matching is scarily accurate to what companies actually want."</p>
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">
+                            PS
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">Priya Sharma</h4>
+                            <p class="text-sm text-slate-500">CSE Final Year, IIT Delhi</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Story 2 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex text-amber-400 mb-4">
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    </div>
+                    <p class="text-slate-700 italic mb-6">"Found perfectly matched interns. It saved 60% of our screening time because we only saw candidates who genuinely possessed the skills we needed."</p>
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-full bg-orange-100 text-[#FF6B35] flex items-center justify-center font-bold text-lg">
+                            RK
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">Rajesh Kumar</h4>
+                            <p class="text-sm text-slate-500">HR Manager, Infosys</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Story 3 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex text-amber-400 mb-4">
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                    </div>
+                    <p class="text-slate-700 italic mb-6">"The curriculum gap report helped us redesign 4 courses to match industry standards. Our students are now much more confident during placements."</p>
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-lg">
+                            AV
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">Dr. Anita Verma</h4>
+                            <p class="text-sm text-slate-500">Professor, VIT Vellore</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Banner -->
+    <section class="py-20 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-800 z-0"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-30 z-10"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 text-center">
+            <h2 class="text-3xl md:text-5xl font-bold text-white mb-8">Ready to Transform Your Career Journey?</h2>
+            
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="student.html" class="w-full sm:w-auto px-8 py-4 bg-white text-blue-700 font-bold rounded-lg hover:bg-blue-50 transition-colors shadow-xl">
+                    I'm a Student
+                </a>
+                <a href="industry.html" class="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition-colors">
+                    I'm from Industry
+                </a>
+                <a href="academician.html" class="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition-colors">
+                    I'm an Academician
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-300 py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i data-lucide="lightbulb" class="w-6 h-6 text-blue-500"></i>
+                        <span class="text-xl font-bold text-white">SkillBridge</span>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-6">Bridging the gap between academia and industry for SIH 2026.</p>
+                    <div class="inline-flex items-center space-x-2 bg-slate-800 px-3 py-1.5 rounded-md text-xs">
+                        <span class="w-2 h-2 rounded-full bg-[#FF6B35]"></span>
+                        <span class="font-semibold text-white">SIH 2026 | Problem #26044</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-4">Product</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Skill Domains</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Pricing</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Success Stories</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-4">For Users</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="student.html" class="hover:text-white transition-colors">Student Dashboard</a></li>
+                        <li><a href="industry.html" class="hover:text-white transition-colors">Industry Portal</a></li>
+                        <li><a href="academician.html" class="hover:text-white transition-colors">Academician Hub</a></li>
+                        <li><a href="admin.html" class="hover:text-white transition-colors">Admin Panel</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                    </ul>
+                    <div class="mt-4 flex space-x-4">
+                        <a href="#" class="text-slate-400 hover:text-white transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-white transition-colors"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-white transition-colors"><i data-lucide="github" class="w-5 h-5"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500">
+                <p>&copy; 2026 SkillBridge. All rights reserved.</p>
+                <div class="flex space-x-4 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 z-[100] modal-overlay flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('loginModal')"></div>
+        <div class="bg-white rounded-2xl w-full max-w-md modal-content overflow-hidden shadow-2xl relative z-10">
+            <div class="p-6 md:p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-slate-800">Welcome Back</h3>
+                    <button onclick="closeModal('loginModal')" class="text-slate-400 hover:text-slate-600">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <p class="text-slate-500 text-sm mb-6">Select your role to access demo dashboards.</p>
+                
+                <!-- Role Selector (Login) -->
+                <div class="flex gap-2 p-1 bg-slate-100 rounded-lg mb-6 overflow-x-auto hide-scrollbar">
+                    <button class="login-role-btn active flex-1 py-2 px-3 rounded-md text-sm font-semibold bg-white text-blue-600 shadow-sm" data-role="student">Student</button>
+                    <button class="login-role-btn flex-1 py-2 px-3 rounded-md text-sm font-semibold text-slate-600 hover:text-slate-900" data-role="industry">Industry</button>
+                    <button class="login-role-btn flex-1 py-2 px-3 rounded-md text-sm font-semibold text-slate-600 hover:text-slate-900" data-role="academician">Academic</button>
+                    <button class="login-role-btn flex-1 py-2 px-3 rounded-md text-sm font-semibold text-slate-600 hover:text-slate-900" data-role="admin">Admin</button>
+                </div>
+
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                            <input type="email" id="loginEmail" value="demo@student.com" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+                            <input type="password" value="password123" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" required>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="remember" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                <label for="remember" class="ml-2 text-sm text-slate-600">Remember me</label>
+                            </div>
+                            <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500">Forgot password?</a>
+                        </div>
+                        
+                        <button type="submit" class="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-md mt-2">
+                            Login to Dashboard
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-6 text-center text-sm text-slate-600">
+                    Don't have an account? <button onclick="closeModal('loginModal'); openModal('registerModal')" class="font-bold text-blue-600 hover:underline">Register Free</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="fixed inset-0 z-[100] modal-overlay flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('registerModal')"></div>
+        <div class="bg-white rounded-2xl w-full max-w-2xl modal-content overflow-hidden shadow-2xl relative z-10 flex flex-col max-h-[90vh]">
+            
+            <div class="p-6 md:p-8 border-b border-slate-100 flex justify-between items-center shrink-0">
+                <h3 class="text-2xl font-bold text-slate-800">Join SkillBridge</h3>
+                <button onclick="closeModal('registerModal')" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-100 h-1.5 shrink-0">
+                <div id="register-progress" class="bg-[#FF6B35] h-1.5 w-1/3 transition-all duration-300"></div>
+            </div>
+
+            <div class="p-6 md:p-8 overflow-y-auto">
+                <!-- Step 1: Role -->
+                <div id="reg-step-1" class="reg-step block">
+                    <h4 class="text-lg font-bold text-slate-800 mb-4">How do you want to use SkillBridge?</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Student -->
+                        <div class="role-card border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-blue-500 transition-all group" onclick="selectRole('student', this)">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                    <i data-lucide="user" class="w-5 h-5"></i>
+                                </div>
+                                <h5 class="font-bold text-slate-800">Student</h5>
+                            </div>
+                            <p class="text-sm text-slate-500">I want to map my skills and find internships.</p>
+                        </div>
+                        
+                        <!-- Industry -->
+                        <div class="role-card border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-orange-500 transition-all group" onclick="selectRole('industry', this)">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <div class="w-10 h-10 bg-orange-50 text-orange-600 rounded-lg flex items-center justify-center group-hover:bg-[#FF6B35] group-hover:text-white transition-colors">
+                                    <i data-lucide="building" class="w-5 h-5"></i>
+                                </div>
+                                <h5 class="font-bold text-slate-800">Industry</h5>
+                            </div>
+                            <p class="text-sm text-slate-500">I want to hire talent and post requirements.</p>
+                        </div>
+                        
+                        <!-- Academician -->
+                        <div class="role-card border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-emerald-500 transition-all group" onclick="selectRole('academician', this)">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                                    <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                                </div>
+                                <h5 class="font-bold text-slate-800">Academician</h5>
+                            </div>
+                            <p class="text-sm text-slate-500">I want to track students and align curriculum.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Basic Info -->
+                <div id="reg-step-2" class="reg-step hidden space-y-4">
+                    <h4 class="text-lg font-bold text-slate-800 mb-4">Basic Information</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">First Name</label>
+                            <input type="text" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
+                            <input type="text" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                        <input type="email" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+                        <input type="password" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+
+                <!-- Step 3: Specific Info -->
+                <div id="reg-step-3" class="reg-step hidden space-y-4">
+                    <h4 class="text-lg font-bold text-slate-800 mb-4">Complete Profile</h4>
+                    
+                    <!-- Dynamic fields based on role -->
+                    <div id="dynamic-fields-student" class="dynamic-fields hidden space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">College/University</label>
+                            <select class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                <option>Select Institution</option>
+                                <option>IIT Delhi</option>
+                                <option>NIT Trichy</option>
+                                <option>VIT Vellore</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Degree & Major</label>
+                            <input type="text" placeholder="e.g. B.Tech Computer Science" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+
+                    <div id="dynamic-fields-industry" class="dynamic-fields hidden space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Company Name</label>
+                            <input type="text" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Designation</label>
+                            <input type="text" placeholder="e.g. HR Manager, Tech Lead" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-6 border-t border-slate-100 flex justify-between shrink-0 bg-slate-50">
+                <button id="btn-prev" onclick="prevStep()" class="px-6 py-2 border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-white hidden transition-colors">
+                    Back
+                </button>
+                <div class="flex-1"></div>
+                <button id="btn-next" onclick="nextStep()" class="px-6 py-2 bg-[#FF6B35] text-white font-semibold rounded-lg hover:bg-orange-600 transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                    Next Step
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 10) {
+                nav.classList.add('shadow-md');
+                nav.classList.replace('py-4', 'py-2');
+            } else {
+                nav.classList.remove('shadow-md');
+                nav.classList.replace('py-2', 'py-4');
+            }
+        });
+
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Animated Counters using Intersection Observer
+        const counters = document.querySelectorAll('.counter');
+        const speed = 200; // The lower the slower
+
+        const animateCounters = (entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    const updateCount = () => {
+                        const target = +counter.getAttribute('data-target');
+                        const count = +counter.innerText.replace(/,/g, '');
+                        const inc = target / speed;
+
+                        if (count < target) {
+                            counter.innerText = Math.ceil(count + inc).toLocaleString();
+                            setTimeout(updateCount, 15);
+                        } else {
+                            counter.innerText = target.toLocaleString();
+                        }
+                    };
+                    updateCount();
+                    observer.unobserve(counter);
+                }
+            });
+        };
+
+        const counterObserver = new IntersectionObserver(animateCounters, { threshold: 0.5 });
+        counters.forEach(counter => {
+            counterObserver.observe(counter);
+        });
+
+        // How It Works Tabs
+        const howTabs = document.querySelectorAll('.how-tab-btn');
+        const howContents = document.querySelectorAll('.how-tab-content');
+
+        howTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active styling from all tabs
+                howTabs.forEach(t => {
+                    t.classList.remove('bg-blue-600', 'text-white', 'active');
+                    t.classList.add('text-slate-600');
+                });
+                // Hide all contents
+                howContents.forEach(c => c.classList.add('hidden'));
+
+                // Add active styling to clicked tab
+                tab.classList.remove('text-slate-600');
+                tab.classList.add('bg-blue-600', 'text-white', 'active');
+                
+                // Show corresponding content
+                const targetId = tab.getAttribute('data-target');
+                document.getElementById(targetId).classList.remove('hidden');
+            });
+        });
+
+        // Login Role Selector (updates email for demo)
+        let currentLoginRole = 'student';
+        const loginRoleBtns = document.querySelectorAll('.login-role-btn');
+        const loginEmail = document.getElementById('loginEmail');
+        
+        loginRoleBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Reset all
+                loginRoleBtns.forEach(b => {
+                    b.classList.remove('bg-white', 'text-blue-600', 'shadow-sm', 'active');
+                    b.classList.add('text-slate-600');
+                });
+                
+                // Set active
+                btn.classList.remove('text-slate-600');
+                btn.classList.add('bg-white', 'text-blue-600', 'shadow-sm', 'active');
+                
+                // Update email hint
+                currentLoginRole = btn.getAttribute('data-role');
+                loginEmail.value = `demo@${currentLoginRole}.com`;
+            });
+        });
+
+        // Handle Login Submission
+        function handleLogin(e) {
+            e.preventDefault();
+            // Redirect to appropriate dashboard based on selected role
+            window.location.href = `${currentLoginRole}.html`;
+        }
+
+        // Modal Controls
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+            document.body.style.overflow = 'hidden';
+            if(id === 'registerModal') resetRegForm();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Registration Multi-step Logic
+        let currentStep = 1;
+        let selectedRegRole = null;
+
+        function selectRole(role, el) {
+            selectedRegRole = role;
+            // Visual feedback
+            document.querySelectorAll('.role-card').forEach(card => {
+                card.classList.remove('border-blue-500', 'border-orange-500', 'border-emerald-500', 'bg-slate-50');
+            });
+            
+            if(role === 'student') el.classList.add('border-blue-500', 'bg-blue-50/30');
+            if(role === 'industry') el.classList.add('border-orange-500', 'bg-orange-50/30');
+            if(role === 'academician') el.classList.add('border-emerald-500', 'bg-emerald-50/30');
+            
+            document.getElementById('btn-next').removeAttribute('disabled');
+        }
+
+        function resetRegForm() {
+            currentStep = 1;
+            selectedRegRole = null;
+            updateRegUI();
+            document.querySelectorAll('.role-card').forEach(card => {
+                card.classList.remove('border-blue-500', 'border-orange-500', 'border-emerald-500', 'bg-slate-50');
+            });
+            document.getElementById('btn-next').setAttribute('disabled', 'true');
+        }
+
+        function nextStep() {
+            if(currentStep === 3) {
+                // Submit form
+                alert("Registration successful! Redirecting to dashboard...");
+                window.location.href = `${selectedRegRole}.html`;
+                return;
+            }
+            currentStep++;
+            updateRegUI();
+        }
+
+        function prevStep() {
+            currentStep--;
+            updateRegUI();
+        }
+
+        function updateRegUI() {
+            // Update progress bar
+            document.getElementById('register-progress').style.width = `${(currentStep / 3) * 100}%`;
+            
+            // Show/hide steps
+            document.querySelectorAll('.reg-step').forEach(step => step.classList.add('hidden'));
+            document.getElementById(`reg-step-${currentStep}`).classList.remove('hidden');
+            
+            // Show/hide specific dynamic fields in step 3
+            if(currentStep === 3) {
+                document.querySelectorAll('.dynamic-fields').forEach(f => f.classList.add('hidden'));
+                const specificFields = document.getElementById(`dynamic-fields-${selectedRegRole}`);
+                if(specificFields) specificFields.classList.remove('hidden');
+            }
+
+            // Update buttons
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            
+            if(currentStep === 1) {
+                btnPrev.classList.add('hidden');
+                if(!selectedRegRole) btnNext.setAttribute('disabled', 'true');
+            } else {
+                btnPrev.classList.remove('hidden');
+                btnNext.removeAttribute('disabled');
+            }
+            
+            if(currentStep === 3) {
+                btnNext.innerText = 'Complete Registration';
+                btnNext.classList.replace('bg-[#FF6B35]', 'bg-blue-600');
+                btnNext.classList.replace('hover:bg-orange-600', 'hover:bg-blue-700');
+            } else {
+                btnNext.innerText = 'Next Step';
+                btnNext.classList.replace('bg-blue-600', 'bg-[#FF6B35]');
+                btnNext.classList.replace('hover:bg-blue-700', 'hover:bg-orange-600');
+            }
+        }
+        
+        // Initial setup for reg form
+        document.getElementById('btn-next').setAttribute('disabled', 'true');
+    </script>
+</body>
+</html>

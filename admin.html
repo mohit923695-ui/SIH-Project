@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillBridge Admin Console | SIH 2026</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Scripts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            navy: '#0f172a',
+                            blue: '#1a56db',
+                            orange: '#FF6B35',
+                            green: '#059669',
+                            bg: '#f1f5f9'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; overflow: hidden; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-item.active {
+            background-color: rgba(30, 41, 59, 1);
+            color: #FF6B35;
+            border-left: 4px solid #FF6B35;
+        }
+
+        .tree-node::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -1rem;
+            bottom: 0;
+            width: 1px;
+            background-color: #e2e8f0;
+        }
+    </style>
+</head>
+<body class="flex h-screen w-full text-slate-800">
+
+    <!-- SIDEBAR -->
+    <aside class="w-[260px] bg-brand-navy text-slate-300 flex flex-col h-full flex-shrink-0 z-20 shadow-xl transition-all">
+        <!-- Logo Area -->
+        <div class="h-16 flex items-center px-6 border-b border-slate-700/50 bg-slate-900/50">
+            <i data-lucide="graduation-cap" class="text-white w-7 h-7 mr-3"></i>
+            <span class="text-white font-bold text-xl tracking-tight">SkillBridge</span>
+        </div>
+        
+        <!-- Branding / Badges -->
+        <div class="px-5 py-4 border-b border-slate-700/50 space-y-2">
+            <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Supported By</div>
+            <div class="flex items-center space-x-2">
+                <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center p-0.5">
+                    <!-- Placeholder for Emblem -->
+                    <i data-lucide="landmark" class="w-4 h-4 text-brand-orange"></i>
+                </div>
+                <div class="text-xs font-semibold leading-tight text-white">Ministry of Ayush <br> & AIIA</div>
+            </div>
+            <div class="inline-flex items-center px-2 py-1 bg-gradient-to-r from-brand-orange to-brand-green rounded text-[10px] font-bold text-white shadow-sm mt-2">
+                SIH 2026 • Problem 26044
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 overflow-y-auto py-4 hide-scrollbar space-y-1">
+            <a href="#" onclick="switchTab('overview')" id="nav-overview" class="nav-item active flex items-center px-6 py-3 text-sm font-medium hover:bg-slate-800 hover:text-brand-orange transition-colors border-l-4 border-transparent">
+                <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i> Overview
+            </a>
+            <a href="#" onclick="switchTab('users')" id="nav-users" class="nav-item flex items-center px-6 py-3 text-sm font-medium hover:bg-slate-800 hover:text-brand-orange transition-colors border-l-4 border-transparent">
+                <i data-lucide="users" class="w-5 h-5 mr-3"></i> User Management
+            </a>
+            <a href="#" onclick="switchTab('institutions')" id="nav-institutions" class="nav-item flex items-center px-6 py-3 text-sm font-medium hover:bg-slate-800 hover:text-brand-orange transition-colors border-l-4 border-transparent">
+                <i data-lucide="building-2" class="w-5 h-5 mr-3"></i> Institutions
+            </a>
+            <a href="#" onclick="switchTab('companies')" id="nav-companies" class="nav-item flex items-center px-6 py-3 text-sm font-medium hover:bg-slate-800 hover:text-brand-orange transition-colors border-l-4 border-transparent">
+                <i data-lucide="briefcase" class="w-5 h-5 mr-3"></i> Companies
+            </a>
+            <a href="#" onclick="switchTab('approvals')" id="nav-approvals" class="nav-item flex items-center px-6 py-3 text-sm font-medium hover:bg-slate-800 hover:text-brand-orange transition-colors border-l-4 border-transparent justify-between">
+                <div class="flex items-center"><i data-lucide="check-square" class="w-5 h-5 mr-3"></i> Approvals</div>
+                <span class="bg-brand-orange text-white text-[10px] font-bold px-2 py-0.5 rounded-full">36</span>
+            </a>
+            <a href="#" onclick="switchTab('taxonomy')" id="nav-taxonomy" class="nav-item flex items-center px-6 py-3 text-sm font-medium hover:bg-slate-800 hover:text-brand-orange transition-colors border-l-4 border-transparent">
+                <i data-lucide="tag" class="w-5 h-5 mr-3"></i> Skill Taxonomy
+            </a>
+            <div class="px-6 py-2 mt-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">Insights</div>
+            <a href="#" onclick="switchTab('analytics')" id="nav-analytics" class="nav-item flex items-center px-6 py-3 text-sm font-medium hover:bg-slate-800 hover:text-brand-orange transition-colors border-l-4 border-transparent">
+                <i data-lucide="bar-chart-2" class="w-5 h-5 mr-3"></i> Analytics
+            </a>
+            <a href="#" onclick="switchTab('reports')" id="nav-reports" class="nav-item flex items-center px-6 py-3 text-sm font-medium hover:bg-slate-800 hover:text-brand-orange transition-colors border-l-4 border-transparent">
+                <i data-lucide="file-text" class="w-5 h-5 mr-3"></i> Reports
+            </a>
+            <div class="px-6 py-2 mt-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">System</div>
+            <a href="#" class="nav-item flex items-center px-6 py-3 text-sm font-medium hover:bg-slate-800 hover:text-brand-orange transition-colors border-l-4 border-transparent">
+                <i data-lucide="settings" class="w-5 h-5 mr-3"></i> Settings
+            </a>
+            <a href="#" class="nav-item flex items-center px-6 py-3 text-sm font-medium hover:bg-slate-800 hover:text-brand-orange transition-colors border-l-4 border-transparent">
+                <i data-lucide="shield" class="w-5 h-5 mr-3"></i> Security
+            </a>
+        </nav>
+
+        <!-- User Profile Area -->
+        <div class="p-4 border-t border-slate-700/50 bg-slate-900">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600">
+                        <span class="text-white font-bold text-sm">AD</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-white">Admin User</p>
+                        <p class="text-[11px] text-slate-400">Super Admin</p>
+                    </div>
+                </div>
+                <button class="text-slate-400 hover:text-brand-orange transition-colors" title="Logout">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        <!-- Content Area -->
+        <div class="flex-1 overflow-y-auto p-8 hide-scrollbar scroll-smooth relative">
+
+            <!-- ===================== TAB 1: OVERVIEW ===================== -->
+            <div id="tab-overview" class="tab-content active space-y-6">
+                <!-- Top Bar -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900">Platform Overview</h1>
+                        <div class="flex items-center mt-1 text-sm text-slate-500">
+                            <span><span id="current-date"></span></span>
+                            <span class="mx-2">•</span>
+                            <div class="flex items-center text-brand-green font-medium">
+                                <span class="relative flex h-2.5 w-2.5 mr-2">
+                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-green opacity-75"></span>
+                                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-green"></span>
+                                </span>
+                                All Systems Operational
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button class="flex items-center px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition shadow-sm">
+                            <i data-lucide="bell" class="w-4 h-4 mr-2"></i> System Alerts (3)
+                        </button>
+                        <button onclick="switchTab('reports')" class="flex items-center px-4 py-2 bg-brand-blue rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition shadow-sm">
+                            <i data-lucide="download" class="w-4 h-4 mr-2"></i> Generate Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPIs Row 1 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 relative overflow-hidden">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500 mb-1">Total Users</p>
+                                <h3 class="text-3xl font-bold text-slate-800">52,847</h3>
+                            </div>
+                            <div class="p-3 bg-blue-50 text-brand-blue rounded-lg"><i data-lucide="users" class="w-6 h-6"></i></div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm text-brand-green font-medium">
+                            <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i>
+                            <span>1,234 this month</span>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-1 bg-brand-blue"></div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 relative overflow-hidden">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500 mb-1">Active Institutions</p>
+                                <h3 class="text-3xl font-bold text-slate-800">342</h3>
+                            </div>
+                            <div class="p-3 bg-orange-50 text-brand-orange rounded-lg"><i data-lucide="building-2" class="w-6 h-6"></i></div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm text-brand-green font-medium">
+                            <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i>
+                            <span>12 new this month</span>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-1 bg-brand-orange"></div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 relative overflow-hidden">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500 mb-1">Partner Companies</p>
+                                <h3 class="text-3xl font-bold text-slate-800">523</h3>
+                            </div>
+                            <div class="p-3 bg-purple-50 text-purple-600 rounded-lg"><i data-lucide="briefcase" class="w-6 h-6"></i></div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm text-brand-green font-medium">
+                            <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i>
+                            <span>28 new this month</span>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-1 bg-purple-500"></div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 relative overflow-hidden">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500 mb-1">Total Placements</p>
+                                <h3 class="text-3xl font-bold text-slate-800">18,432</h3>
+                            </div>
+                            <div class="p-3 bg-green-50 text-brand-green rounded-lg"><i data-lucide="award" class="w-6 h-6"></i></div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm text-brand-green font-medium">
+                            <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i>
+                            <span>847 this month</span>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-1 bg-brand-green"></div>
+                    </div>
+                </div>
+
+                <!-- KPIs Row 2 (Secondary) -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-4 flex items-center space-x-4">
+                        <div class="p-2 bg-slate-50 rounded-md text-slate-500"><i data-lucide="list" class="w-5 h-5"></i></div>
+                        <div>
+                            <p class="text-xs text-slate-500 font-medium">Active Internships</p>
+                            <p class="text-lg font-bold text-slate-800">2,847</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-4 flex items-center space-x-4">
+                        <div class="p-2 bg-slate-50 rounded-md text-slate-500"><i data-lucide="check-circle" class="w-5 h-5"></i></div>
+                        <div>
+                            <p class="text-xs text-slate-500 font-medium">Assessments Today</p>
+                            <p class="text-lg font-bold text-slate-800">1,203</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-4 flex items-center space-x-4">
+                        <div class="p-2 bg-slate-50 rounded-md text-slate-500"><i data-lucide="file-input" class="w-5 h-5"></i></div>
+                        <div>
+                            <p class="text-xs text-slate-500 font-medium">Applications Today</p>
+                            <p class="text-lg font-bold text-slate-800">3,421</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-4 flex items-center space-x-4">
+                        <div class="p-2 bg-slate-50 rounded-md text-slate-500"><i data-lucide="percent" class="w-5 h-5"></i></div>
+                        <div>
+                            <p class="text-xs text-slate-500 font-medium">Avg Match Score</p>
+                            <p class="text-lg font-bold text-slate-800">78%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- User Growth Line Chart -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 lg:col-span-2">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4">User Growth (Last 6 Months)</h3>
+                        <div class="h-64 w-full">
+                            <canvas id="userGrowthChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- User Distribution Doughnut -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4">User Distribution</h3>
+                        <div class="h-64 w-full flex items-center justify-center relative">
+                            <canvas id="userDistChart"></canvas>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                <span class="text-2xl font-bold text-slate-800">52.8k</span>
+                                <span class="text-xs text-slate-500">Total Users</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts & Activity Feed Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Alerts -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-slate-800 flex items-center">
+                                <i data-lucide="alert-triangle" class="w-5 h-5 mr-2 text-brand-orange"></i> System Alerts
+                            </h3>
+                            <button class="text-sm text-brand-blue font-medium hover:underline">View All</button>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="p-4 rounded-lg border-l-4 border-red-500 bg-red-50 flex items-start justify-between group">
+                                <div class="flex items-start">
+                                    <i data-lucide="server" class="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-800">High: Server response time >2s in Bangalore region</p>
+                                        <p class="text-xs text-slate-500 mt-1">2h ago • DevOps Team notified</p>
+                                    </div>
+                                </div>
+                                <button class="text-slate-400 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition"><i data-lucide="x" class="w-4 h-4"></i></button>
+                            </div>
+                            <div class="p-4 rounded-lg border-l-4 border-yellow-500 bg-yellow-50 flex items-start justify-between group">
+                                <div class="flex items-start">
+                                    <i data-lucide="mail" class="w-5 h-5 text-yellow-600 mt-0.5 mr-3 flex-shrink-0"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-800">Medium: Bulk email queue delayed</p>
+                                        <p class="text-xs text-slate-500 mt-1">4h ago • 234 emails pending processing</p>
+                                    </div>
+                                </div>
+                                <button class="text-slate-400 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition"><i data-lucide="x" class="w-4 h-4"></i></button>
+                            </div>
+                            <div class="p-4 rounded-lg border-l-4 border-green-500 bg-green-50 flex items-start justify-between group">
+                                <div class="flex items-start">
+                                    <i data-lucide="database" class="w-5 h-5 text-green-600 mt-0.5 mr-3 flex-shrink-0"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-800">Info: Database backup completed</p>
+                                        <p class="text-xs text-slate-500 mt-1">1h ago • Size: 4.2GB • S3 Asia-South-1</p>
+                                    </div>
+                                </div>
+                                <button class="text-slate-400 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition"><i data-lucide="x" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Feed -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-slate-800">Recent Activity</h3>
+                            <button class="text-sm text-brand-blue font-medium hover:underline">Refresh</button>
+                        </div>
+                        <div class="relative pl-6 border-l-2 border-slate-100 space-y-6 mt-2">
+                            <div class="relative">
+                                <div class="absolute -left-[35px] bg-white p-1 rounded-full border-2 border-brand-orange text-brand-orange">
+                                    <i data-lucide="building" class="w-3 h-3"></i>
+                                </div>
+                                <p class="text-sm text-slate-800">New institution registered: <span class="font-semibold">VIT Bhopal</span></p>
+                                <p class="text-xs text-slate-500 mt-0.5">2 mins ago</p>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute -left-[35px] bg-white p-1 rounded-full border-2 border-brand-blue text-brand-blue">
+                                    <i data-lucide="briefcase" class="w-3 h-3"></i>
+                                </div>
+                                <p class="text-sm text-slate-800"><span class="font-semibold">Infosys</span> posted 3 new internship opportunities</p>
+                                <p class="text-xs text-slate-500 mt-0.5">5 mins ago</p>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute -left-[35px] bg-white p-1 rounded-full border-2 border-brand-green text-brand-green">
+                                    <i data-lucide="award" class="w-3 h-3"></i>
+                                </div>
+                                <p class="text-sm text-slate-800">Student <span class="font-semibold">Priya Sharma</span> received an offer from <span class="font-semibold">Google India</span></p>
+                                <p class="text-xs text-slate-500 mt-0.5">8 mins ago</p>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute -left-[35px] bg-white p-1 rounded-full border-2 border-purple-500 text-purple-500">
+                                    <i data-lucide="file-text" class="w-3 h-3"></i>
+                                </div>
+                                <p class="text-sm text-slate-800">Curriculum gap report generated for <span class="font-semibold">IIT Delhi</span></p>
+                                <p class="text-xs text-slate-500 mt-0.5">12 mins ago</p>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute -left-[35px] bg-white p-1 rounded-full border-2 border-slate-500 text-slate-500">
+                                    <i data-lucide="user-plus" class="w-3 h-3"></i>
+                                </div>
+                                <p class="text-sm text-slate-800">Bulk upload of 250 students completed by <span class="font-semibold">NIT Trichy</span></p>
+                                <p class="text-xs text-slate-500 mt-0.5">34 mins ago</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== TAB 2: USER MANAGEMENT ===================== -->
+            <div id="tab-users" class="tab-content space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <h1 class="text-2xl font-bold text-slate-900">User Management</h1>
+                    <button onclick="toggleModal('addUserModal')" class="flex items-center px-4 py-2 bg-brand-blue rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition shadow-sm">
+                        <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Add User
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <div class="relative w-full md:w-96">
+                        <i data-lucide="search" class="absolute left-3 top-2.5 w-5 h-5 text-slate-400"></i>
+                        <input type="text" placeholder="Search by name, email or ID..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent text-sm">
+                    </div>
+                    <div class="flex space-x-3 w-full md:w-auto">
+                        <select class="px-4 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+                            <option value="">All Roles</option>
+                            <option value="student">Student</option>
+                            <option value="industry">Industry</option>
+                            <option value="academician">Academician</option>
+                        </select>
+                        <select class="px-4 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                        <div class="text-sm font-medium text-slate-600">Showing 1-7 of 52,847 users</div>
+                        <div class="space-x-2">
+                            <button class="px-3 py-1.5 text-xs font-medium bg-white border border-slate-200 rounded text-slate-600 hover:bg-slate-50">Bulk Export</button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-white text-slate-500 font-medium border-b border-slate-100">
+                                <tr>
+                                    <th class="px-6 py-4"><input type="checkbox" class="rounded text-brand-blue"></th>
+                                    <th class="px-6 py-4">User</th>
+                                    <th class="px-6 py-4">Role</th>
+                                    <th class="px-6 py-4">Institution/Company</th>
+                                    <th class="px-6 py-4">Registered</th>
+                                    <th class="px-6 py-4">Status</th>
+                                    <th class="px-6 py-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-slate-700">
+                                <!-- Row 1 -->
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-4"><input type="checkbox" class="rounded text-brand-blue"></td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <div class="h-8 w-8 rounded-full bg-blue-100 text-brand-blue flex items-center justify-center font-bold text-xs mr-3">AR</div>
+                                            <div>
+                                                <div class="font-medium text-slate-900">Arnav Rao</div>
+                                                <div class="text-xs text-slate-500">arnav.r@student.nit.edu</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4"><span class="px-2 py-1 bg-blue-50 text-brand-blue rounded text-xs font-medium">Student</span></td>
+                                    <td class="px-6 py-4">NIT Trichy</td>
+                                    <td class="px-6 py-4 text-slate-500">Oct 12, 2025</td>
+                                    <td class="px-6 py-4"><span class="flex items-center text-brand-green text-xs font-medium"><span class="w-1.5 h-1.5 rounded-full bg-brand-green mr-1.5"></span>Active</span></td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-slate-400 hover:text-brand-blue mx-1"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                        <button class="text-slate-400 hover:text-slate-700 mx-1"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                    </td>
+                                </tr>
+                                <!-- Row 2 -->
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-4"><input type="checkbox" class="rounded text-brand-blue"></td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <div class="h-8 w-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-xs mr-3">PK</div>
+                                            <div>
+                                                <div class="font-medium text-slate-900">Priya Kapoor</div>
+                                                <div class="text-xs text-slate-500">p.kapoor@tcs.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4"><span class="px-2 py-1 bg-purple-50 text-purple-600 rounded text-xs font-medium">Industry</span></td>
+                                    <td class="px-6 py-4">Tata Consultancy Services</td>
+                                    <td class="px-6 py-4 text-slate-500">Sep 05, 2025</td>
+                                    <td class="px-6 py-4"><span class="flex items-center text-brand-green text-xs font-medium"><span class="w-1.5 h-1.5 rounded-full bg-brand-green mr-1.5"></span>Active</span></td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-slate-400 hover:text-brand-blue mx-1"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                        <button class="text-slate-400 hover:text-slate-700 mx-1"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                    </td>
+                                </tr>
+                                <!-- Row 3 -->
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-4"><input type="checkbox" class="rounded text-brand-blue"></td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <div class="h-8 w-8 rounded-full bg-orange-100 text-brand-orange flex items-center justify-center font-bold text-xs mr-3">DS</div>
+                                            <div>
+                                                <div class="font-medium text-slate-900">Dr. Suresh Menon</div>
+                                                <div class="text-xs text-slate-500">s.menon@iitb.ac.in</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4"><span class="px-2 py-1 bg-orange-50 text-brand-orange rounded text-xs font-medium">Academician</span></td>
+                                    <td class="px-6 py-4">IIT Bombay</td>
+                                    <td class="px-6 py-4 text-slate-500">Aug 22, 2025</td>
+                                    <td class="px-6 py-4"><span class="flex items-center text-brand-green text-xs font-medium"><span class="w-1.5 h-1.5 rounded-full bg-brand-green mr-1.5"></span>Active</span></td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-slate-400 hover:text-brand-blue mx-1"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                        <button class="text-slate-400 hover:text-slate-700 mx-1"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                    </td>
+                                </tr>
+                                <!-- Row 4 (Pending) -->
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-4"><input type="checkbox" class="rounded text-brand-blue"></td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <div class="h-8 w-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-xs mr-3">NJ</div>
+                                            <div>
+                                                <div class="font-medium text-slate-900">Neha Jain</div>
+                                                <div class="text-xs text-slate-500">neha.j@startup.in</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4"><span class="px-2 py-1 bg-purple-50 text-purple-600 rounded text-xs font-medium">Industry</span></td>
+                                    <td class="px-6 py-4">InnovateTech</td>
+                                    <td class="px-6 py-4 text-slate-500">Today, 10:23 AM</td>
+                                    <td class="px-6 py-4"><span class="flex items-center text-yellow-600 text-xs font-medium"><span class="w-1.5 h-1.5 rounded-full bg-yellow-500 mr-1.5"></span>Pending</span></td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-slate-400 hover:text-brand-blue mx-1"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                        <button class="text-slate-400 hover:text-slate-700 mx-1"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="p-4 border-t border-slate-100 flex items-center justify-between">
+                        <button class="px-3 py-1 text-sm border border-slate-200 rounded text-slate-500 hover:bg-slate-50 disabled:opacity-50" disabled>Previous</button>
+                        <div class="flex space-x-1">
+                            <button class="w-8 h-8 flex items-center justify-center rounded bg-brand-blue text-white text-sm">1</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 text-slate-600 text-sm">2</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 text-slate-600 text-sm">3</button>
+                            <span class="w-8 h-8 flex items-center justify-center text-slate-400">...</span>
+                        </div>
+                        <button class="px-3 py-1 text-sm border border-slate-200 rounded text-slate-500 hover:bg-slate-50">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== TAB 3: INSTITUTIONS ===================== -->
+            <div id="tab-institutions" class="tab-content space-y-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900">Registered Institutions</h1>
+                        <p class="text-sm text-slate-500 mt-1">Manage academic partners on the platform.</p>
+                    </div>
+                    <button class="px-4 py-2 bg-brand-blue text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">Add Institution</button>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium">Total</p>
+                            <p class="text-2xl font-bold text-slate-800">342</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-brand-blue"><i data-lucide="building" class="w-5 h-5"></i></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium">Active</p>
+                            <p class="text-2xl font-bold text-brand-green">298</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-brand-green"><i data-lucide="check-circle" class="w-5 h-5"></i></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium">Pending Verification</p>
+                            <p class="text-2xl font-bold text-brand-orange">44</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-brand-orange"><i data-lucide="clock" class="w-5 h-5"></i></div>
+                    </div>
+                </div>
+
+                <!-- Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Card 1 -->
+                    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5 hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center font-bold text-lg text-slate-600 mr-4">IITR</div>
+                                <div>
+                                    <h3 class="font-bold text-slate-900">IIT Roorkee</h3>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-brand-blue">Govt • IIT</span>
+                                </div>
+                            </div>
+                            <span class="p-1 bg-green-50 text-brand-green rounded-full" title="Verified"><i data-lucide="check-circle-2" class="w-5 h-5"></i></span>
+                        </div>
+                        <div class="space-y-2 mb-4 text-sm">
+                            <div class="flex justify-between text-slate-600"><span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-2"></i>Location</span> <span class="font-medium">Uttarakhand</span></div>
+                            <div class="flex justify-between text-slate-600"><span class="flex items-center"><i data-lucide="users" class="w-4 h-4 mr-2"></i>Students</span> <span class="font-medium">4,250</span></div>
+                            <div class="flex justify-between text-slate-600"><span class="flex items-center"><i data-lucide="graduation-cap" class="w-4 h-4 mr-2"></i>Faculty</span> <span class="font-medium">320</span></div>
+                        </div>
+                        <div class="flex space-x-2 pt-4 border-t border-slate-100">
+                            <button class="flex-1 py-1.5 text-sm font-medium text-brand-blue bg-blue-50 hover:bg-blue-100 rounded transition">View Profile</button>
+                            <button class="px-3 py-1.5 text-sm text-slate-500 bg-slate-50 hover:bg-slate-100 rounded transition"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5 hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center font-bold text-lg text-slate-600 mr-4">NITT</div>
+                                <div>
+                                    <h3 class="font-bold text-slate-900">NIT Trichy</h3>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-brand-blue">Govt • NIT</span>
+                                </div>
+                            </div>
+                            <span class="p-1 bg-green-50 text-brand-green rounded-full" title="Verified"><i data-lucide="check-circle-2" class="w-5 h-5"></i></span>
+                        </div>
+                        <div class="space-y-2 mb-4 text-sm">
+                            <div class="flex justify-between text-slate-600"><span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-2"></i>Location</span> <span class="font-medium">Tamil Nadu</span></div>
+                            <div class="flex justify-between text-slate-600"><span class="flex items-center"><i data-lucide="users" class="w-4 h-4 mr-2"></i>Students</span> <span class="font-medium">3,800</span></div>
+                            <div class="flex justify-between text-slate-600"><span class="flex items-center"><i data-lucide="graduation-cap" class="w-4 h-4 mr-2"></i>Faculty</span> <span class="font-medium">280</span></div>
+                        </div>
+                        <div class="flex space-x-2 pt-4 border-t border-slate-100">
+                            <button class="flex-1 py-1.5 text-sm font-medium text-brand-blue bg-blue-50 hover:bg-blue-100 rounded transition">View Profile</button>
+                            <button class="px-3 py-1.5 text-sm text-slate-500 bg-slate-50 hover:bg-slate-100 rounded transition"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5 hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center font-bold text-lg text-slate-600 mr-4">VIT</div>
+                                <div>
+                                    <h3 class="font-bold text-slate-900">VIT Vellore</h3>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-purple-50 text-purple-600">Private</span>
+                                </div>
+                            </div>
+                            <span class="p-1 bg-green-50 text-brand-green rounded-full" title="Verified"><i data-lucide="check-circle-2" class="w-5 h-5"></i></span>
+                        </div>
+                        <div class="space-y-2 mb-4 text-sm">
+                            <div class="flex justify-between text-slate-600"><span class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-2"></i>Location</span> <span class="font-medium">Tamil Nadu</span></div>
+                            <div class="flex justify-between text-slate-600"><span class="flex items-center"><i data-lucide="users" class="w-4 h-4 mr-2"></i>Students</span> <span class="font-medium">8,500</span></div>
+                            <div class="flex justify-between text-slate-600"><span class="flex items-center"><i data-lucide="graduation-cap" class="w-4 h-4 mr-2"></i>Faculty</span> <span class="font-medium">650</span></div>
+                        </div>
+                        <div class="flex space-x-2 pt-4 border-t border-slate-100">
+                            <button class="flex-1 py-1.5 text-sm font-medium text-brand-blue bg-blue-50 hover:bg-blue-100 rounded transition">View Profile</button>
+                            <button class="px-3 py-1.5 text-sm text-slate-500 bg-slate-50 hover:bg-slate-100 rounded transition"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== TAB 4: COMPANIES (Placeholder for brevity, similar to Institutions) ===================== -->
+            <div id="tab-companies" class="tab-content space-y-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900">Partner Companies</h1>
+                        <p class="text-sm text-slate-500 mt-1">Manage industry partners offering internships.</p>
+                    </div>
+                </div>
+                <div class="p-12 text-center bg-white rounded-xl border border-dashed border-slate-300">
+                    <i data-lucide="briefcase" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
+                    <h3 class="text-lg font-medium text-slate-900">523 Companies Registered</h3>
+                    <p class="text-sm text-slate-500 mt-1">UI layout mirrors the Institutions tab.</p>
+                </div>
+            </div>
+
+            <!-- ===================== TAB 5: APPROVALS QUEUE ===================== -->
+            <div id="tab-approvals" class="tab-content space-y-6">
+                <h1 class="text-2xl font-bold text-slate-900">Pending Approvals</h1>
+                
+                <div class="flex space-x-2 border-b border-slate-200 mb-6">
+                    <button class="px-4 py-2 text-sm font-medium text-brand-blue border-b-2 border-brand-blue">All (36)</button>
+                    <button class="px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700">Institutions (12)</button>
+                    <button class="px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700">Companies (18)</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Approval Card 1 -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5" id="approval-1">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block px-2 py-1 bg-blue-50 text-brand-blue text-[10px] font-bold rounded uppercase tracking-wider mb-2">Institution</span>
+                                <h3 class="text-lg font-bold text-slate-900">Manipal Institute of Technology</h3>
+                                <p class="text-xs text-slate-500">Submitted by: Dr. Anil Kumar • 2 days ago</p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 rounded-lg p-3 mb-4">
+                            <p class="text-xs font-semibold text-slate-600 mb-2 uppercase">Verification Documents</p>
+                            <ul class="space-y-2">
+                                <li class="flex items-center text-sm text-slate-700"><i data-lucide="check-circle" class="w-4 h-4 text-brand-green mr-2"></i> AICTE Approval Letter.pdf</li>
+                                <li class="flex items-center text-sm text-slate-700"><i data-lucide="check-circle" class="w-4 h-4 text-brand-green mr-2"></i> University Affiliation.pdf</li>
+                                <li class="flex items-center text-sm text-slate-700"><i data-lucide="check-circle" class="w-4 h-4 text-brand-green mr-2"></i> Nodal Officer ID.jpg</li>
+                            </ul>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="handleApproval('approval-1', true)" class="flex-1 bg-brand-green hover:bg-green-700 text-white py-2 rounded-lg text-sm font-medium transition flex justify-center items-center">
+                                <i data-lucide="check" class="w-4 h-4 mr-1"></i> Approve
+                            </button>
+                            <button onclick="handleApproval('approval-1', false)" class="flex-1 bg-white border border-red-200 text-red-600 hover:bg-red-50 py-2 rounded-lg text-sm font-medium transition flex justify-center items-center">
+                                <i data-lucide="x" class="w-4 h-4 mr-1"></i> Reject
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Approval Card 2 -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5" id="approval-2">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block px-2 py-1 bg-purple-50 text-purple-600 text-[10px] font-bold rounded uppercase tracking-wider mb-2">Company</span>
+                                <h3 class="text-lg font-bold text-slate-900">TechNova Solutions Pvt Ltd</h3>
+                                <p class="text-xs text-slate-500">Submitted by: HR Team • 1 day ago</p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 rounded-lg p-3 mb-4">
+                            <p class="text-xs font-semibold text-slate-600 mb-2 uppercase">Verification Documents</p>
+                            <ul class="space-y-2">
+                                <li class="flex items-center text-sm text-slate-700"><i data-lucide="check-circle" class="w-4 h-4 text-brand-green mr-2"></i> Certificate of Incorporation.pdf</li>
+                                <li class="flex items-center text-sm text-slate-700"><i data-lucide="check-circle" class="w-4 h-4 text-brand-green mr-2"></i> GST_Certificate.pdf</li>
+                                <li class="flex items-center text-sm text-slate-500"><i data-lucide="circle" class="w-4 h-4 mr-2"></i> PAN Card (Missing)</li>
+                            </ul>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="handleApproval('approval-2', true)" class="flex-1 bg-brand-green hover:bg-green-700 text-white py-2 rounded-lg text-sm font-medium transition flex justify-center items-center">
+                                <i data-lucide="check" class="w-4 h-4 mr-1"></i> Approve
+                            </button>
+                            <button class="flex-1 bg-white border border-blue-200 text-brand-blue hover:bg-blue-50 py-2 rounded-lg text-sm font-medium transition flex justify-center items-center">
+                                Request Info
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== TAB 6: SKILL TAXONOMY ===================== -->
+            <div id="tab-taxonomy" class="tab-content space-y-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h1 class="text-2xl font-bold text-slate-900">Skill Taxonomy Management</h1>
+                    <button class="px-4 py-2 bg-brand-blue text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">Add Category</button>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="relative w-full max-w-md mb-6">
+                        <i data-lucide="search" class="absolute left-3 top-2.5 w-5 h-5 text-slate-400"></i>
+                        <input type="text" placeholder="Search skills..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue text-sm">
+                    </div>
+
+                    <ul class="space-y-2 select-none">
+                        <!-- Technology Node -->
+                        <li class="relative">
+                            <div class="flex items-center justify-between p-2 hover:bg-slate-50 rounded cursor-pointer group" onclick="toggleNode('node-tech')">
+                                <div class="flex items-center">
+                                    <i data-lucide="chevron-down" id="icon-node-tech" class="w-4 h-4 mr-2 text-slate-400 transition-transform"></i>
+                                    <span class="font-semibold text-slate-800">Technology</span>
+                                </div>
+                                <div class="opacity-0 group-hover:opacity-100 flex space-x-2">
+                                    <button class="text-xs text-brand-blue hover:underline">Add Skill</button>
+                                </div>
+                            </div>
+                            <ul id="node-tech" class="pl-8 mt-1 space-y-1 relative tree-node">
+                                <li class="p-2 text-sm text-slate-600 hover:bg-slate-50 rounded flex justify-between group">
+                                    <span>Programming Languages (Python, Java, C++, JavaScript)</span>
+                                    <button class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-brand-blue"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
+                                </li>
+                                <li class="p-2 text-sm text-slate-600 hover:bg-slate-50 rounded flex justify-between group">
+                                    <span>Cloud & DevOps (AWS, Azure, Docker, K8s)</span>
+                                    <button class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-brand-blue"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Healthcare / Ayush Node -->
+                        <li class="relative">
+                            <div class="flex items-center justify-between p-2 hover:bg-slate-50 rounded cursor-pointer group" onclick="toggleNode('node-ayush')">
+                                <div class="flex items-center">
+                                    <i data-lucide="chevron-down" id="icon-node-ayush" class="w-4 h-4 mr-2 text-slate-400 transition-transform"></i>
+                                    <span class="font-semibold text-slate-800">Healthcare & Ayurveda</span>
+                                </div>
+                                <div class="opacity-0 group-hover:opacity-100 flex space-x-2">
+                                    <button class="text-xs text-brand-blue hover:underline">Add Skill</button>
+                                </div>
+                            </div>
+                            <ul id="node-ayush" class="pl-8 mt-1 space-y-1 relative tree-node">
+                                <li class="p-2 text-sm text-slate-600 hover:bg-slate-50 rounded flex justify-between group">
+                                    <span>Ayurvedic Pharmacology (Dravyaguna)</span>
+                                    <button class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-brand-blue"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
+                                </li>
+                                <li class="p-2 text-sm text-slate-600 hover:bg-slate-50 rounded flex justify-between group">
+                                    <span>Herb Identification & Processing</span>
+                                    <button class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-brand-blue"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
+                                </li>
+                                <li class="p-2 text-sm text-slate-600 hover:bg-slate-50 rounded flex justify-between group">
+                                    <span>Clinical Research Data Management</span>
+                                    <button class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-brand-blue"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ===================== TAB 7: ANALYTICS ===================== -->
+            <div id="tab-analytics" class="tab-content space-y-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h1 class="text-2xl font-bold text-slate-900">Platform Analytics</h1>
+                    <button class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition shadow-sm">Export Data</button>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Funnel Chart -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4">User Journey Funnel</h3>
+                        <div class="h-64 w-full">
+                            <canvas id="funnelChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Industry Sectors -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4">Placement by Industry Sector</h3>
+                        <div class="h-64 w-full">
+                            <canvas id="sectorChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== TAB 8: REPORTS ===================== -->
+            <div id="tab-reports" class="tab-content space-y-6">
+                <h1 class="text-2xl font-bold text-slate-900">Custom Reports</h1>
+                
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm max-w-3xl">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4">Generate New Report</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Report Type</label>
+                            <select class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-blue">
+                                <option>Placement Summary</option>
+                                <option>Skill Gap Analysis</option>
+                                <option>Institution Performance</option>
+                                <option>Ayush Sector Engagement</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Start Date</label>
+                                <input type="date" class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-blue">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">End Date</label>
+                                <input type="date" class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-blue">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Format</label>
+                            <div class="flex space-x-4">
+                                <label class="flex items-center"><input type="radio" name="format" checked class="text-brand-blue focus:ring-brand-blue h-4 w-4"><span class="ml-2 text-sm">PDF</span></label>
+                                <label class="flex items-center"><input type="radio" name="format" class="text-brand-blue focus:ring-brand-blue h-4 w-4"><span class="ml-2 text-sm">Excel (XLSX)</span></label>
+                                <label class="flex items-center"><input type="radio" name="format" class="text-brand-blue focus:ring-brand-blue h-4 w-4"><span class="ml-2 text-sm">CSV</span></label>
+                            </div>
+                        </div>
+                        <button id="btn-generate-report" onclick="simulateReportGen()" class="w-full py-2.5 bg-brand-blue text-white rounded-lg font-medium hover:bg-blue-700 transition flex items-center justify-center">
+                            <i data-lucide="file-text" class="w-4 h-4 mr-2"></i> Generate Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Reports -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mt-6">
+                    <div class="p-4 border-b border-slate-100 bg-slate-50">
+                        <h3 class="font-bold text-slate-800">Recently Generated Reports</h3>
+                    </div>
+                    <div class="p-0">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <tbody class="divide-y divide-slate-100 text-slate-700">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-6 py-4 flex items-center"><i data-lucide="file-pdf" class="w-5 h-5 text-red-500 mr-3"></i> Q3 Placement Summary</td>
+                                    <td class="px-6 py-4 text-slate-500">Today, 09:41 AM</td>
+                                    <td class="px-6 py-4 text-slate-500">Admin User</td>
+                                    <td class="px-6 py-4 text-right"><button class="text-brand-blue hover:underline font-medium">Download</button></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-6 py-4 flex items-center"><i data-lucide="file-spreadsheet" class="w-5 h-5 text-green-600 mr-3"></i> Skill Gap Analysis - Tech</td>
+                                    <td class="px-6 py-4 text-slate-500">Yesterday, 14:20 PM</td>
+                                    <td class="px-6 py-4 text-slate-500">System Auto</td>
+                                    <td class="px-6 py-4 text-right"><button class="text-brand-blue hover:underline font-medium">Download</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODAL: Add User -->
+    <div id="addUserModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-[fadeIn_0.2s_ease-out]">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="text-lg font-bold text-slate-800">Add New User</h3>
+                <button onclick="toggleModal('addUserModal')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                    <input type="text" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-blue">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                    <input type="email" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-blue">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Role</label>
+                    <select class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-blue">
+                        <option>Admin</option>
+                        <option>Institution Nodal Officer</option>
+                        <option>Company HR</option>
+                    </select>
+                </div>
+                <div class="pt-4 flex justify-end space-x-3">
+                    <button onclick="toggleModal('addUserModal')" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200">Cancel</button>
+                    <button onclick="showToast('User invited successfully!')" class="px-4 py-2 text-sm font-medium text-white bg-brand-blue rounded-lg hover:bg-blue-700">Send Invite</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Date init
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Remove active class from nav
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active', 'bg-slate-800', 'text-brand-orange', 'border-l-4', 'border-brand-orange');
+                el.classList.add('border-transparent');
+            });
+            
+            // Show selected tab
+            document.getElementById('tab-' + tabId).classList.add('active');
+            
+            // Highlight nav item
+            const activeNav = document.getElementById('nav-' + tabId);
+            activeNav.classList.add('active', 'bg-slate-800', 'text-brand-orange', 'border-brand-orange');
+            activeNav.classList.remove('border-transparent');
+
+            // Render charts if switching to a tab that has them
+            if(tabId === 'overview' && !window.chartsRendered) {
+                renderOverviewCharts();
+                window.chartsRendered = true;
+            }
+            if(tabId === 'analytics' && !window.analyticsRendered) {
+                renderAnalyticsCharts();
+                window.analyticsRendered = true;
+            }
+        }
+
+        // Modal Logic
+        function toggleModal(id) {
+            const modal = document.getElementById(id);
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // Toast Logic
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-white border-l-4 border-brand-green' : 'bg-white border-l-4 border-brand-blue';
+            const icon = type === 'success' ? '<i data-lucide="check-circle" class="w-5 h-5 text-brand-green mr-2"></i>' : '<i data-lucide="info" class="w-5 h-5 text-brand-blue mr-2"></i>';
+            
+            toast.className = `${bgColor} shadow-lg rounded p-4 flex items-center min-w-[250px] animate-[fadeIn_0.3s_ease-out]`;
+            toast.innerHTML = `${icon}<span class="text-sm font-medium text-slate-800">${message}</span>`;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+            
+            // close modal if open
+            const modal = document.getElementById('addUserModal');
+            if(!modal.classList.contains('hidden')) toggleModal('addUserModal');
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Approval Logic
+        function handleApproval(id, isApproved) {
+            const card = document.getElementById(id);
+            card.innerHTML = `
+                <div class="h-full flex flex-col items-center justify-center p-6">
+                    <i data-lucide="${isApproved ? 'check-circle' : 'x-circle'}" class="w-12 h-12 ${isApproved ? 'text-brand-green' : 'text-red-500'} mb-2"></i>
+                    <p class="font-medium text-slate-800">${isApproved ? 'Application Approved' : 'Application Rejected'}</p>
+                    <p class="text-xs text-slate-500 mt-1">Notification sent to user.</p>
+                </div>
+            `;
+            lucide.createIcons();
+            showToast(isApproved ? 'Approved successfully.' : 'Application rejected.');
+        }
+
+        // Taxonomy Tree Logic
+        function toggleNode(id) {
+            const ul = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            if (ul.style.display === 'none') {
+                ul.style.display = 'block';
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                ul.style.display = 'none';
+                icon.style.transform = 'rotate(-90deg)';
+            }
+        }
+
+        // Simulated Report Gen
+        function simulateReportGen() {
+            const btn = document.getElementById('btn-generate-report');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i> Generating...';
+            btn.disabled = true;
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showToast('Report generated successfully. Download started.');
+            }, 1500);
+        }
+
+        // CHART.JS INITIALIZATION
+        Chart.defaults.font.family = 'Inter';
+        Chart.defaults.color = '#64748b';
+
+        function renderOverviewCharts() {
+            // User Growth Line Chart
+            const ctxGrowth = document.getElementById('userGrowthChart').getContext('2d');
+            new Chart(ctxGrowth, {
+                type: 'line',
+                data: {
+                    labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                    datasets: [
+                        { label: 'Students', data: [32000, 35000, 39000, 42000, 45000, 48500], borderColor: '#1a56db', backgroundColor: 'rgba(26, 86, 219, 0.1)', tension: 0.4, fill: true },
+                        { label: 'Industry', data: [200, 250, 320, 380, 450, 523], borderColor: '#FF6B35', tension: 0.4 },
+                        { label: 'Academic', data: [150, 180, 220, 260, 310, 342], borderColor: '#059669', tension: 0.4 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } }
+            });
+
+            // User Dist Doughnut
+            const ctxDist = document.getElementById('userDistChart').getContext('2d');
+            new Chart(ctxDist, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Students', 'Industry', 'Academicians'],
+                    datasets: [{ data: [78, 14, 8], backgroundColor: ['#1a56db', '#FF6B35', '#059669'], borderWidth: 0, cutout: '75%' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function renderAnalyticsCharts() {
+            // Funnel / Bar Chart
+            const ctxFunnel = document.getElementById('funnelChart').getContext('2d');
+            new Chart(ctxFunnel, {
+                type: 'bar',
+                data: {
+                    labels: ['Registered', 'Profile Completed', 'Assessed', 'Applied', 'Placed'],
+                    datasets: [{ label: 'Users', data: [52000, 41000, 32000, 24000, 8500], backgroundColor: '#1a56db', borderRadius: 4 }]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#f1f5f9' } }, y: { grid: { display: false } } } }
+            });
+
+            // Sector Chart
+            const ctxSector = document.getElementById('sectorChart').getContext('2d');
+            new Chart(ctxSector, {
+                type: 'pie',
+                data: {
+                    labels: ['IT / Software', 'Finance', 'Healthcare/Ayush', 'Manufacturing', 'Others'],
+                    datasets: [{ data: [45, 20, 15, 12, 8], backgroundColor: ['#1a56db', '#3b82f6', '#059669', '#FF6B35', '#94a3b8'], borderWidth: 2, borderColor: '#fff' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+            });
+        }
+
+        // Init initial charts on load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderOverviewCharts();
+            window.chartsRendered = true;
+        });
+
+    </script>
+</body>
+</html>

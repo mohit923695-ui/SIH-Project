@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillBridge - Industry Partner Dashboard</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#1a56db',
+                        secondary: '#FF6B35',
+                        success: '#059669',
+                        dark: '#1e293b',
+                        background: '#f0f4f8',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0f4f8; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tag-input-container { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0.25rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background: white; }
+        .tag { background: #e0e7ff; color: #1a56db; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.25rem; }
+        .tag button { color: #1e40af; cursor: pointer; }
+        .tag-input { border: none; outline: none; flex-grow: 1; padding: 0.25rem; min-width: 100px; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            background-color: white;
+            border-left: 4px solid #059669;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateX(120%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .toast.show { transform: translateX(0); }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden text-dark">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white shadow-lg z-20 flex flex-col justify-between hidden md:flex h-full border-r border-gray-200">
+        <div>
+            <div class="p-6 border-b border-gray-100 flex items-center space-x-3">
+                <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">S</div>
+                <div>
+                    <h1 class="text-xl font-extrabold text-primary tracking-tight">SkillBridge</h1>
+                    <p class="text-xs text-gray-500 font-medium">Industry Portal</p>
+                </div>
+            </div>
+
+            <div class="p-4 border-b border-gray-100">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-100 text-primary rounded-full flex items-center justify-center font-bold text-xl">
+                        I
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-800">Infosys Limited</p>
+                        <p class="text-xs text-gray-500">Meera Krishnan • HR</p>
+                        <p class="text-xs text-gray-400">Bangalore HQ</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="p-4 space-y-1">
+                <a href="#" class="nav-link active flex items-center space-x-3 p-3 rounded-lg bg-blue-50 text-primary font-medium transition-colors" data-tab="dashboard">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-link flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary font-medium transition-colors" data-tab="post-opportunity">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                    <span>Post Opportunity</span>
+                </a>
+                <a href="#" class="nav-link flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary font-medium transition-colors" data-tab="find-candidates">
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                    <span>Find Candidates</span>
+                </a>
+                <a href="#" class="nav-link flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary font-medium transition-colors" data-tab="applications">
+                    <i data-lucide="inbox" class="w-5 h-5"></i>
+                    <span>Applications</span>
+                </a>
+                <a href="#" class="nav-link flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary font-medium transition-colors" data-tab="analytics">
+                    <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-link flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary font-medium transition-colors" data-tab="collaborations">
+                    <i data-lucide="handshake" class="w-5 h-5"></i>
+                    <span>Collaborations</span>
+                </a>
+                <a href="#" class="nav-link flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary font-medium transition-colors" data-tab="messages">
+                    <i data-lucide="message-square" class="w-5 h-5"></i>
+                    <span>Messages</span>
+                </a>
+                <a href="#" class="nav-link flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary font-medium transition-colors" data-tab="settings">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </div>
+        
+        <div class="p-4 border-t border-gray-100 space-y-1">
+            <a href="index.html" class="flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary font-medium transition-colors">
+                <i data-lucide="home" class="w-5 h-5"></i>
+                <span>Back to Home</span>
+            </a>
+            <a href="index.html" class="flex items-center space-x-3 p-3 rounded-lg text-red-600 hover:bg-red-50 font-medium transition-colors">
+                <i data-lucide="log-out" class="w-5 h-5"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden bg-background">
+        
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200 p-4 lg:p-6 flex justify-between items-center z-10">
+            <div class="flex items-center space-x-4">
+                <button class="md:hidden text-gray-600 hover:text-primary">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <h2 id="page-title" class="text-xl lg:text-2xl font-bold text-gray-800">Dashboard</h2>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button class="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
+                    <i data-lucide="bell" class="w-6 h-6"></i>
+                    <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-secondary rounded-full border-2 border-white"></span>
+                </button>
+                <button onclick="switchTab('post-opportunity')" class="hidden sm:flex items-center space-x-2 bg-secondary hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>Post New Opportunity</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Scrollable Content Area -->
+        <div class="flex-1 overflow-y-auto p-4 lg:p-8">
+            
+            <!-- TAB 1: DASHBOARD -->
+            <div id="tab-dashboard" class="tab-content active space-y-6">
+                
+                <div class="mb-8">
+                    <h3 class="text-lg text-gray-600">Welcome back, <span class="font-bold text-gray-800">Meera 👋</span></h3>
+                    <p class="text-gray-500 text-sm mt-1">Here is what's happening with your hiring pipeline today.</p>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Active Postings</p>
+                            <h4 class="text-2xl font-bold text-gray-800">12</h4>
+                            <p class="text-xs text-success mt-2 flex items-center"><i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +2 this week</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
+                            <i data-lucide="briefcase" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Total Applicants</p>
+                            <h4 class="text-2xl font-bold text-gray-800">847</h4>
+                            <p class="text-xs text-success mt-2 flex items-center"><i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +124 this week</p>
+                        </div>
+                        <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center">
+                            <i data-lucide="users" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Shortlisted</p>
+                            <h4 class="text-2xl font-bold text-gray-800">143</h4>
+                            <p class="text-xs text-gray-500 mt-2">16.8% conversion rate</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-50 text-success rounded-full flex items-center justify-center">
+                            <i data-lucide="check-circle" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Avg Match Score</p>
+                            <h4 class="text-2xl font-bold text-gray-800">76%</h4>
+                            <p class="text-xs text-success mt-2 flex items-center"><i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +4% since last month</p>
+                        </div>
+                        <div class="w-12 h-12 bg-orange-50 text-secondary rounded-full flex items-center justify-center">
+                            <i data-lucide="target" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Application Volume by Role</h4>
+                        <div class="h-64">
+                            <canvas id="appVolumeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Skill Demand vs Supply Gap</h4>
+                        <div class="h-64 flex justify-center">
+                            <canvas id="skillGapChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two columns: Active Postings & Recent Applications -->
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    
+                    <!-- Active Postings summary -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 xl:col-span-1">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-semibold text-gray-800">Top Active Postings</h4>
+                            <button onclick="switchTab('applications')" class="text-sm text-primary hover:underline font-medium">View all</button>
+                        </div>
+                        <div class="space-y-4">
+                            <!-- Job 1 -->
+                            <div class="p-4 border border-gray-100 rounded-lg bg-gray-50 hover:bg-white hover:shadow-sm transition-all">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h5 class="font-semibold text-gray-800">SDE Intern</h5>
+                                    <span class="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full">Active</span>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-3"><i data-lucide="map-pin" class="w-3 h-3 inline mr-1"></i>Bangalore / Remote</p>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600"><strong class="text-gray-800">234</strong> Applicants</span>
+                                    <span class="text-gray-600"><strong class="text-gray-800">45</strong> Shortlisted</span>
+                                </div>
+                                <div class="mt-3 w-full bg-gray-200 rounded-full h-1.5">
+                                    <div class="bg-primary h-1.5 rounded-full" style="width: 70%"></div>
+                                </div>
+                            </div>
+                            <!-- Job 2 -->
+                            <div class="p-4 border border-gray-100 rounded-lg bg-gray-50 hover:bg-white hover:shadow-sm transition-all">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h5 class="font-semibold text-gray-800">Data Analyst Intern</h5>
+                                    <span class="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full">Active</span>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-3"><i data-lucide="map-pin" class="w-3 h-3 inline mr-1"></i>Pune</p>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600"><strong class="text-gray-800">156</strong> Applicants</span>
+                                    <span class="text-gray-600"><strong class="text-gray-800">28</strong> Shortlisted</span>
+                                </div>
+                                <div class="mt-3 w-full bg-gray-200 rounded-full h-1.5">
+                                    <div class="bg-primary h-1.5 rounded-full" style="width: 45%"></div>
+                                </div>
+                            </div>
+                            <!-- Job 3 -->
+                            <div class="p-4 border border-gray-100 rounded-lg bg-gray-50 hover:bg-white hover:shadow-sm transition-all">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h5 class="font-semibold text-gray-800">ML Research Intern</h5>
+                                    <span class="text-xs font-medium px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full">Closing Soon</span>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-3"><i data-lucide="map-pin" class="w-3 h-3 inline mr-1"></i>Hyderabad</p>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600"><strong class="text-gray-800">89</strong> Applicants</span>
+                                    <span class="text-gray-600"><strong class="text-gray-800">12</strong> Shortlisted</span>
+                                </div>
+                                <div class="mt-3 w-full bg-gray-200 rounded-full h-1.5">
+                                    <div class="bg-secondary h-1.5 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Applications Table -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 xl:col-span-2 overflow-hidden flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-semibold text-gray-800">Recent Applications</h4>
+                            <button onclick="switchTab('applications')" class="text-sm text-primary hover:underline font-medium">View all applicants</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                                        <th class="p-3 rounded-tl-lg font-medium">Candidate</th>
+                                        <th class="p-3 font-medium">Role Applied</th>
+                                        <th class="p-3 font-medium">Match</th>
+                                        <th class="p-3 font-medium">Status</th>
+                                        <th class="p-3 rounded-tr-lg font-medium text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-sm divide-y divide-gray-100">
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="p-3">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs">AS</div>
+                                                <div>
+                                                    <p class="font-medium text-gray-800">Arjun Sharma</p>
+                                                    <p class="text-xs text-gray-500">IIT Madras</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="p-3 text-gray-700">SDE Intern</td>
+                                        <td class="p-3">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">92%</span>
+                                        </td>
+                                        <td class="p-3">
+                                            <span class="inline-flex items-center space-x-1">
+                                                <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                                                <span class="text-gray-600 text-xs">Pending</span>
+                                            </span>
+                                        </td>
+                                        <td class="p-3 text-right">
+                                            <button class="text-primary hover:text-blue-800 text-xs font-medium mr-2" onclick="showToast('Profile opened')">View</button>
+                                            <button class="text-success hover:text-green-800 text-xs font-medium" onclick="showToast('Candidate shortlisted!')">Shortlist</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="p-3">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">PP</div>
+                                                <div>
+                                                    <p class="font-medium text-gray-800">Priya Patel</p>
+                                                    <p class="text-xs text-gray-500">NIT Trichy</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="p-3 text-gray-700">Data Analyst Intern</td>
+                                        <td class="p-3">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">88%</span>
+                                        </td>
+                                        <td class="p-3">
+                                            <span class="inline-flex items-center space-x-1">
+                                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                                <span class="text-gray-600 text-xs">Interview</span>
+                                            </span>
+                                        </td>
+                                        <td class="p-3 text-right">
+                                            <button class="text-primary hover:text-blue-800 text-xs font-medium" onclick="showToast('Profile opened')">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="p-3">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center font-bold text-xs">RK</div>
+                                                <div>
+                                                    <p class="font-medium text-gray-800">Rahul Kumar</p>
+                                                    <p class="text-xs text-gray-500">VIT Vellore</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="p-3 text-gray-700">SDE Intern</td>
+                                        <td class="p-3">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">74%</span>
+                                        </td>
+                                        <td class="p-3">
+                                            <span class="inline-flex items-center space-x-1">
+                                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                                <span class="text-gray-600 text-xs">Shortlisted</span>
+                                            </span>
+                                        </td>
+                                        <td class="p-3 text-right">
+                                            <button class="text-primary hover:text-blue-800 text-xs font-medium mr-2" onclick="showToast('Profile opened')">View</button>
+                                            <button class="text-blue-600 hover:text-blue-800 text-xs font-medium" onclick="showToast('Interview scheduled')">Schedule</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="p-3">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="w-8 h-8 rounded-full bg-pink-100 text-pink-700 flex items-center justify-center font-bold text-xs">SN</div>
+                                                <div>
+                                                    <p class="font-medium text-gray-800">Sneha Nair</p>
+                                                    <p class="text-xs text-gray-500">BITS Pilani</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="p-3 text-gray-700">ML Research Intern</td>
+                                        <td class="p-3">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">95%</span>
+                                        </td>
+                                        <td class="p-3">
+                                            <span class="inline-flex items-center space-x-1">
+                                                <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                                                <span class="text-gray-600 text-xs">Pending</span>
+                                            </span>
+                                        </td>
+                                        <td class="p-3 text-right">
+                                            <button class="text-primary hover:text-blue-800 text-xs font-medium mr-2" onclick="showToast('Profile opened')">View</button>
+                                            <button class="text-success hover:text-green-800 text-xs font-medium" onclick="showToast('Candidate shortlisted!')">Shortlist</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="p-3">
+                                            <div class="flex items-center space-x-3">
+                                                <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="w-8 h-8 rounded-full">
+                                                <div>
+                                                    <p class="font-medium text-gray-800">Vikram Singh</p>
+                                                    <p class="text-xs text-gray-500">IIIT Hyderabad</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="p-3 text-gray-700">SDE Intern</td>
+                                        <td class="p-3">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">45%</span>
+                                        </td>
+                                        <td class="p-3">
+                                            <span class="inline-flex items-center space-x-1">
+                                                <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                                <span class="text-gray-600 text-xs">Rejected</span>
+                                            </span>
+                                        </td>
+                                        <td class="p-3 text-right">
+                                            <button class="text-gray-400 hover:text-gray-600 text-xs font-medium" onclick="showToast('Profile opened')">View</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: POST OPPORTUNITY -->
+            <div id="tab-post-opportunity" class="tab-content max-w-4xl mx-auto">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 bg-gray-50">
+                        <h3 class="text-xl font-bold text-gray-800">Create New Opportunity</h3>
+                        <p class="text-sm text-gray-500 mt-1">Fill in the details below to publish a new internship or job role to the student portal.</p>
+                    </div>
+                    
+                    <form class="p-6 space-y-8" onsubmit="event.preventDefault(); showToast('Opportunity posted successfully!'); setTimeout(() => switchTab('dashboard'), 1500);">
+                        
+                        <!-- Basic Details -->
+                        <div>
+                            <h4 class="text-base font-semibold text-gray-800 border-b border-gray-200 pb-2 mb-4">Basic Details</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="col-span-1 md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Role Title <span class="text-red-500">*</span></label>
+                                    <input type="text" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="e.g. Software Development Engineering Intern" required>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                                    <select class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                                        <option>Engineering</option>
+                                        <option>Data Science</option>
+                                        <option>Product Management</option>
+                                        <option>Design</option>
+                                        <option>Marketing</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                                    <select class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                                        <option>Internship</option>
+                                        <option>Full-time</option>
+                                        <option>Part-time</option>
+                                        <option>Project-based</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Duration</label>
+                                    <select class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                                        <option>1-3 months</option>
+                                        <option>3-6 months</option>
+                                        <option>6-12 months</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Number of Positions</label>
+                                    <input type="number" min="1" value="1" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="text" class="flex-1 border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="e.g. Bangalore">
+                                        <label class="flex items-center space-x-2 text-sm text-gray-600 bg-gray-50 p-2.5 rounded-lg border border-gray-200 cursor-pointer">
+                                            <input type="checkbox" class="w-4 h-4 text-primary rounded focus:ring-primary">
+                                            <span>Remote</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Stipend / Salary Range (Monthly)</label>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-gray-500">₹</span>
+                                        <input type="number" placeholder="Min" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary outline-none">
+                                        <span class="text-gray-500">-</span>
+                                        <input type="number" placeholder="Max" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary outline-none">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Requirements -->
+                        <div>
+                            <h4 class="text-base font-semibold text-gray-800 border-b border-gray-200 pb-2 mb-4">Requirements & Skill Mapping</h4>
+                            <div class="space-y-6">
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Required Skills (SIH Skill Mapping) <span class="text-red-500">*</span></label>
+                                    <p class="text-xs text-gray-500 mb-2">Type a skill and press Enter. This is used by our AI to match students.</p>
+                                    <div class="tag-input-container" id="post-skills-container">
+                                        <div class="tag">Python <button type="button" onclick="this.parentElement.remove()"><i data-lucide="x" class="w-3 h-3"></i></button></div>
+                                        <div class="tag">React <button type="button" onclick="this.parentElement.remove()"><i data-lucide="x" class="w-3 h-3"></i></button></div>
+                                        <input type="text" class="tag-input" id="post-skills-input" placeholder="Add skill...">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Minimum CGPA</label>
+                                        <div class="flex items-center space-x-4">
+                                            <input type="range" min="0" max="10" step="0.5" value="7.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('cgpa-val').innerText = this.value">
+                                            <span id="cgpa-val" class="font-bold text-gray-700 w-8">7.5</span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Education Level</label>
+                                        <select class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                                            <option>Any</option>
+                                            <option>B.Tech / B.E.</option>
+                                            <option>M.Tech / M.E.</option>
+                                            <option>BCA / MCA</option>
+                                            <option>MBA</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <h4 class="text-base font-semibold text-gray-800 border-b border-gray-200 pb-2 mb-4">Job Description</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">About the Role</label>
+                                    <textarea rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none resize-none" placeholder="Describe the role, team, and expectations..."></textarea>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Perks & Benefits</label>
+                                    <div class="flex flex-wrap gap-4">
+                                        <label class="inline-flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary" checked>
+                                            <span class="ml-2 text-sm text-gray-600">PPO Opportunity</span>
+                                        </label>
+                                        <label class="inline-flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary" checked>
+                                            <span class="ml-2 text-sm text-gray-600">Certificate</span>
+                                        </label>
+                                        <label class="inline-flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary" checked>
+                                            <span class="ml-2 text-sm text-gray-600">Letter of Recommendation</span>
+                                        </label>
+                                        <label class="inline-flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary">
+                                            <span class="ml-2 text-sm text-gray-600">Flexible Hours</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Settings -->
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                            <h4 class="text-sm font-semibold text-primary mb-3 flex items-center"><i data-lucide="zap" class="w-4 h-4 mr-1"></i> Smart Application Settings</h4>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Application Deadline</label>
+                                    <input type="date" class="w-full border border-gray-300 rounded-lg p-2 outline-none">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Auto-shortlist Threshold (%)</label>
+                                    <div class="flex items-center space-x-3 mt-2">
+                                        <input type="range" min="50" max="100" value="80" class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('threshold-val').innerText = this.value + '%'">
+                                        <span id="threshold-val" class="font-bold text-primary w-12 text-sm">80%</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">Automatically shortlist candidates matching above this score.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex items-center justify-end space-x-4 pt-4 border-t border-gray-200">
+                            <button type="button" class="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors">Save as Draft</button>
+                            <button type="submit" class="px-5 py-2.5 bg-secondary hover:bg-orange-600 text-white rounded-lg font-medium shadow-sm transition-colors flex items-center">
+                                <i data-lucide="send" class="w-4 h-4 mr-2"></i> Publish Opportunity
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB 3: FIND CANDIDATES -->
+            <div id="tab-find-candidates" class="tab-content h-full">
+                <div class="flex flex-col lg:flex-row gap-6 h-full min-h-[600px]">
+                    <!-- Filters Panel -->
+                    <div class="w-full lg:w-72 bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col h-fit">
+                        <div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+                            <h3 class="font-bold text-gray-800 flex items-center"><i data-lucide="filter" class="w-4 h-4 mr-2"></i> Filters</h3>
+                            <button class="text-xs text-primary font-medium hover:underline">Clear all</button>
+                        </div>
+
+                        <div class="space-y-5">
+                            <!-- Skills -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Skills Required</label>
+                                <div class="tag-input-container" id="filter-skills-container">
+                                    <div class="tag">React <button onclick="this.parentElement.remove()"><i data-lucide="x" class="w-3 h-3"></i></button></div>
+                                    <input type="text" class="tag-input" id="filter-skills-input" placeholder="Add skill...">
+                                </div>
+                            </div>
+
+                            <!-- Min Match -->
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <label class="text-sm font-medium text-gray-700">Min Match Score</label>
+                                    <span id="filter-match-val" class="text-xs font-bold text-primary">70%</span>
+                                </div>
+                                <input type="range" min="0" max="100" value="70" class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('filter-match-val').innerText = this.value + '%'">
+                            </div>
+
+                            <!-- College Tier -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">College Tier</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center space-x-2"><input type="checkbox" checked class="rounded text-primary focus:ring-primary w-4 h-4"><span class="text-sm text-gray-600">Tier 1 (IIT, NIT, BITS)</span></label>
+                                    <label class="flex items-center space-x-2"><input type="checkbox" checked class="rounded text-primary focus:ring-primary w-4 h-4"><span class="text-sm text-gray-600">Tier 2 (VIT, MIT, etc)</span></label>
+                                    <label class="flex items-center space-x-2"><input type="checkbox" class="rounded text-primary focus:ring-primary w-4 h-4"><span class="text-sm text-gray-600">Tier 3 / Others</span></label>
+                                </div>
+                            </div>
+
+                            <!-- Grad Year -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Graduation Year</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="flex items-center space-x-2"><input type="checkbox" class="rounded text-primary w-4 h-4"><span class="text-sm text-gray-600">2024</span></label>
+                                    <label class="flex items-center space-x-2"><input type="checkbox" checked class="rounded text-primary w-4 h-4"><span class="text-sm text-gray-600">2025</span></label>
+                                    <label class="flex items-center space-x-2"><input type="checkbox" checked class="rounded text-primary w-4 h-4"><span class="text-sm text-gray-600">2026</span></label>
+                                    <label class="flex items-center space-x-2"><input type="checkbox" class="rounded text-primary w-4 h-4"><span class="text-sm text-gray-600">2027</span></label>
+                                </div>
+                            </div>
+                            
+                            <button class="w-full bg-primary hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-medium transition-colors" onclick="showToast('Applying filters...')">Apply Filters</button>
+                        </div>
+                    </div>
+
+                    <!-- Results Area -->
+                    <div class="flex-1">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">AI-Powered Candidate Search</h3>
+                            <span class="text-sm text-gray-500">Showing <strong class="text-gray-800">142</strong> matches</span>
+                        </div>
+
+                        <!-- Candidate Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
+                            <!-- Card 1 -->
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow relative">
+                                <div class="absolute top-4 right-4 flex items-center justify-center w-12 h-12 rounded-full border-4 border-green-100 bg-green-50">
+                                    <span class="font-bold text-green-600 text-sm">97%</span>
+                                </div>
+                                <div class="flex items-center space-x-4 mb-4">
+                                    <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-lg">RP</div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-800">Riya Patel</h4>
+                                        <p class="text-xs text-gray-500">IIT Bombay • B.Tech CSE (2025)</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 mb-4">
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1"><span class="text-gray-600">React</span> <span class="font-medium">Expert</span></div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1"><div class="bg-primary h-1 rounded-full" style="width: 90%"></div></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1"><span class="text-gray-600">Node.js</span> <span class="font-medium">Advanced</span></div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1"><div class="bg-primary h-1 rounded-full" style="width: 80%"></div></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1"><span class="text-gray-600">Python</span> <span class="font-medium">Intermediate</span></div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1"><div class="bg-primary h-1 rounded-full" style="width: 60%"></div></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">CGPA: 9.2</span>
+                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">4 Projects</span>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="flex-1 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-1.5 rounded-lg text-xs font-medium transition-colors" onclick="showToast('Profile opened')">View Profile</button>
+                                    <button class="flex-1 bg-green-50 border border-green-200 hover:bg-green-100 text-green-700 py-1.5 rounded-lg text-xs font-medium transition-colors" onclick="showToast('Added to Shortlist')">Shortlist</button>
+                                </div>
+                            </div>
+
+                            <!-- Card 2 -->
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow relative">
+                                <div class="absolute top-4 right-4 flex items-center justify-center w-12 h-12 rounded-full border-4 border-green-100 bg-green-50">
+                                    <span class="font-bold text-green-600 text-sm">91%</span>
+                                </div>
+                                <div class="flex items-center space-x-4 mb-4">
+                                    <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-lg">AK</div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-800">Aditya Kumar</h4>
+                                        <p class="text-xs text-gray-500">NIT Trichy • M.Tech Data (2025)</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 mb-4">
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1"><span class="text-gray-600">Python</span> <span class="font-medium">Expert</span></div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1"><div class="bg-primary h-1 rounded-full" style="width: 95%"></div></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1"><span class="text-gray-600">Machine Learning</span> <span class="font-medium">Advanced</span></div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1"><div class="bg-primary h-1 rounded-full" style="width: 85%"></div></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1"><span class="text-gray-600">SQL</span> <span class="font-medium">Advanced</span></div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1"><div class="bg-primary h-1 rounded-full" style="width: 75%"></div></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">CGPA: 8.8</span>
+                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">2 Certs</span>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="flex-1 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-1.5 rounded-lg text-xs font-medium transition-colors" onclick="showToast('Profile opened')">View Profile</button>
+                                    <button class="flex-1 bg-green-50 border border-green-200 hover:bg-green-100 text-green-700 py-1.5 rounded-lg text-xs font-medium transition-colors" onclick="showToast('Added to Shortlist')">Shortlist</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Card 3 -->
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow relative">
+                                <div class="absolute top-4 right-4 flex items-center justify-center w-12 h-12 rounded-full border-4 border-yellow-100 bg-yellow-50">
+                                    <span class="font-bold text-yellow-600 text-sm">82%</span>
+                                </div>
+                                <div class="flex items-center space-x-4 mb-4">
+                                    <img src="https://i.pravatar.cc/150?img=32" alt="Avatar" class="w-12 h-12 rounded-full">
+                                    <div>
+                                        <h4 class="font-bold text-gray-800">Neha Sharma</h4>
+                                        <p class="text-xs text-gray-500">VIT Vellore • B.Tech IT (2026)</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 mb-4">
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1"><span class="text-gray-600">Java</span> <span class="font-medium">Advanced</span></div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1"><div class="bg-primary h-1 rounded-full" style="width: 80%"></div></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1"><span class="text-gray-600">Spring Boot</span> <span class="font-medium">Intermediate</span></div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1"><div class="bg-primary h-1 rounded-full" style="width: 65%"></div></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">CGPA: 8.5</span>
+                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">1 Internship</span>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="flex-1 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-1.5 rounded-lg text-xs font-medium transition-colors" onclick="showToast('Profile opened')">View Profile</button>
+                                    <button class="flex-1 bg-green-50 border border-green-200 hover:bg-green-100 text-green-700 py-1.5 rounded-lg text-xs font-medium transition-colors" onclick="showToast('Added to Shortlist')">Shortlist</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 flex justify-center border-t border-gray-200 pt-6">
+                            <button class="text-sm font-medium text-primary hover:underline">Load more candidates...</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: APPLICATIONS INBOX -->
+            <div id="tab-applications" class="tab-content h-full">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 h-full flex flex-col">
+                    <!-- Toolbar -->
+                    <div class="p-4 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="flex space-x-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
+                            <button class="px-3 py-1.5 bg-blue-50 text-primary border border-blue-200 rounded-md text-sm font-medium whitespace-nowrap">All (847)</button>
+                            <button class="px-3 py-1.5 bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 rounded-md text-sm font-medium whitespace-nowrap">Pending (604)</button>
+                            <button class="px-3 py-1.5 bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 rounded-md text-sm font-medium whitespace-nowrap">Shortlisted (143)</button>
+                            <button class="px-3 py-1.5 bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 rounded-md text-sm font-medium whitespace-nowrap">Interview (62)</button>
+                            <button class="px-3 py-1.5 bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 rounded-md text-sm font-medium whitespace-nowrap">Offered (12)</button>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <select class="border border-gray-300 rounded-lg p-2 text-sm outline-none focus:border-primary">
+                                <option>All Roles</option>
+                                <option>SDE Intern</option>
+                                <option>Data Analyst Intern</option>
+                                <option>ML Research Intern</option>
+                            </select>
+                            <select class="border border-gray-300 rounded-lg p-2 text-sm outline-none focus:border-primary">
+                                <option>Sort by: Match %</option>
+                                <option>Sort by: Latest</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- List -->
+                    <div class="flex-1 overflow-y-auto p-4 space-y-3">
+                        <div class="p-4 border border-gray-200 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-primary transition-colors cursor-pointer" onclick="showToast('Expanding row...')">
+                            <div class="flex items-center space-x-4">
+                                <input type="checkbox" class="rounded text-primary focus:ring-primary w-4 h-4 cursor-pointer" onclick="event.stopPropagation()">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">KS</div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Karan Singh</h4>
+                                    <p class="text-xs text-gray-500">SDE Intern • IIT Delhi</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-6 sm:space-x-8">
+                                <div class="text-center hidden sm:block">
+                                    <p class="text-xs text-gray-500">Applied</p>
+                                    <p class="text-sm font-medium text-gray-800">2 days ago</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-xs text-gray-500">Match</p>
+                                    <p class="text-sm font-bold text-green-600">94%</p>
+                                </div>
+                                <div class="w-24 text-right">
+                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">Pending</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border border-blue-200 bg-blue-50/30 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors cursor-pointer relative" onclick="showToast('Expanding row...')">
+                            <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-l-lg"></div>
+                            <div class="flex items-center space-x-4">
+                                <input type="checkbox" class="rounded text-primary focus:ring-primary w-4 h-4 cursor-pointer" onclick="event.stopPropagation()">
+                                <img src="https://i.pravatar.cc/150?img=47" alt="Avatar" class="w-10 h-10 rounded-full">
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Pooja Iyer</h4>
+                                    <p class="text-xs text-gray-500">Data Analyst Intern • NIT Surathkal</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-6 sm:space-x-8">
+                                <div class="text-center hidden sm:block">
+                                    <p class="text-xs text-gray-500">Applied</p>
+                                    <p class="text-sm font-medium text-gray-800">3 days ago</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-xs text-gray-500">Match</p>
+                                    <p class="text-sm font-bold text-green-600">89%</p>
+                                </div>
+                                <div class="w-24 text-right">
+                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">Shortlisted</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add more mock rows as needed -->
+                        <div class="p-4 border border-gray-200 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-primary transition-colors cursor-pointer" onclick="showToast('Expanding row...')">
+                            <div class="flex items-center space-x-4">
+                                <input type="checkbox" class="rounded text-primary focus:ring-primary w-4 h-4 cursor-pointer" onclick="event.stopPropagation()">
+                                <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center font-bold text-sm">MD</div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Manish Desai</h4>
+                                    <p class="text-xs text-gray-500">ML Research Intern • BITS Pilani</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-6 sm:space-x-8">
+                                <div class="text-center hidden sm:block">
+                                    <p class="text-xs text-gray-500">Applied</p>
+                                    <p class="text-sm font-medium text-gray-800">5 days ago</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-xs text-gray-500">Match</p>
+                                    <p class="text-sm font-bold text-yellow-600">76%</p>
+                                </div>
+                                <div class="w-24 text-right">
+                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">Interview</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bulk Actions footer -->
+                    <div class="p-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" class="rounded text-primary focus:ring-primary w-4 h-4">
+                            <span class="text-sm font-medium text-gray-700">Select All</span>
+                        </label>
+                        <div class="space-x-2">
+                            <button class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50" onclick="showToast('Selected rejected')">Reject Selected</button>
+                            <button class="px-4 py-2 bg-success text-white rounded-lg text-sm font-medium hover:bg-green-700" onclick="showToast('Selected shortlisted!')">Shortlist Selected</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: ANALYTICS -->
+            <div id="tab-analytics" class="tab-content space-y-6">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Talent Analytics Dashboard</h3>
+                        <p class="text-sm text-gray-500 mt-1">Deep dive into your hiring pipeline metrics based on SIH 2026 problem 26044.</p>
+                    </div>
+                    <button class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center shadow-sm" onclick="showToast('Report downloading...')">
+                        <i data-lucide="download" class="w-4 h-4 mr-2"></i> Export Report
+                    </button>
+                </div>
+
+                <!-- Insight Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl flex items-start space-x-3">
+                        <i data-lucide="trending-up" class="w-5 h-5 text-primary mt-0.5"></i>
+                        <div>
+                            <h5 class="font-bold text-gray-800">Quality Improvement</h5>
+                            <p class="text-sm text-gray-600 mt-1">Average candidate match score improved by <strong class="text-primary">12%</strong> this month due to better skill mapping.</p>
+                        </div>
+                    </div>
+                    <div class="bg-orange-50 border border-orange-100 p-4 rounded-xl flex items-start space-x-3">
+                        <i data-lucide="lightbulb" class="w-5 h-5 text-secondary mt-0.5"></i>
+                        <div>
+                            <h5 class="font-bold text-gray-800">Skill Trend</h5>
+                            <p class="text-sm text-gray-600 mt-1"><strong class="text-secondary">Python & React</strong> are the most common skills, found in 78% of your applicant pool.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Chart 1 -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h4 class="text-sm font-semibold text-gray-800 mb-4">Application Trend (Last 30 Days)</h4>
+                        <div class="h-64"><canvas id="analyticsLineChart"></canvas></div>
+                    </div>
+                    <!-- Chart 2 -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h4 class="text-sm font-semibold text-gray-800 mb-4">Applicant College Distribution</h4>
+                        <div class="h-64 flex justify-center"><canvas id="analyticsDoughnutChart"></canvas></div>
+                    </div>
+                    <!-- Chart 3 -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h4 class="text-sm font-semibold text-gray-800 mb-4">Top Skills in Applicant Pool</h4>
+                        <div class="h-64"><canvas id="analyticsSkillsChart"></canvas></div>
+                    </div>
+                    <!-- Chart 4 -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h4 class="text-sm font-semibold text-gray-800 mb-4">Match Score Distribution</h4>
+                        <div class="h-64"><canvas id="analyticsMatchChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Toast functionality
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <i data-lucide="check-circle" class="w-5 h-5 text-success"></i>
+                <span class="text-sm font-medium text-gray-800">${message}</span>
+            `;
+            container.appendChild(toast);
+            lucide.createIcons({ root: toast });
+            
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Remove
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Show selected tab
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            // Update sidebar active state
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('bg-blue-50', 'text-primary', 'active');
+                link.classList.add('text-gray-600');
+            });
+            const activeLink = document.querySelector(`.nav-link[data-tab="${tabId}"]`);
+            if(activeLink) {
+                activeLink.classList.remove('text-gray-600');
+                activeLink.classList.add('bg-blue-50', 'text-primary', 'active');
+            }
+
+            // Update page title
+            const titles = {
+                'dashboard': 'Dashboard',
+                'post-opportunity': 'Post Opportunity',
+                'find-candidates': 'Find Candidates',
+                'applications': 'Applications Inbox',
+                'analytics': 'Analytics & Reports'
+            };
+            const titleEl = document.getElementById('page-title');
+            if(titleEl && titles[tabId]) titleEl.innerText = titles[tabId];
+        }
+
+        // Bind sidebar clicks
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const tabId = link.getAttribute('data-tab');
+                if (tabId && document.getElementById(`tab-${tabId}`)) {
+                    e.preventDefault();
+                    switchTab(tabId);
+                }
+            });
+        });
+
+        // Tag Input Logic
+        function setupTagInput(containerId, inputId) {
+            const container = document.getElementById(containerId);
+            const input = document.getElementById(inputId);
+            if(!input || !container) return;
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && this.value.trim() !== '') {
+                    e.preventDefault();
+                    const tagText = this.value.trim();
+                    const tag = document.createElement('div');
+                    tag.className = 'tag';
+                    tag.innerHTML = `${tagText} <button type="button" onclick="this.parentElement.remove()"><i data-lucide="x" class="w-3 h-3"></i></button>`;
+                    container.insertBefore(tag, input);
+                    lucide.createIcons({ root: tag });
+                    this.value = '';
+                }
+            });
+        }
+        setupTagInput('post-skills-container', 'post-skills-input');
+        setupTagInput('filter-skills-container', 'filter-skills-input');
+
+        // Charts Initialization
+        document.addEventListener("DOMContentLoaded", () => {
+            // Chart Defaults
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#64748b';
+
+            // 1. Dashboard: Application Volume (Bar)
+            const ctxAppVol = document.getElementById('appVolumeChart').getContext('2d');
+            new Chart(ctxAppVol, {
+                type: 'bar',
+                data: {
+                    labels: ['SDE', 'Data', 'ML', 'UI/UX', 'Product', 'QA', 'DevOps'],
+                    datasets: [{
+                        label: 'Applications',
+                        data: [234, 156, 89, 112, 65, 45, 146],
+                        backgroundColor: '#1a56db',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, grid: { borderDash: [2, 4], color: '#f1f5f9' } }, x: { grid: { display: false } } }
+                }
+            });
+
+            // 2. Dashboard: Skill Gap (Radar)
+            const ctxSkillGap = document.getElementById('skillGapChart').getContext('2d');
+            new Chart(ctxSkillGap, {
+                type: 'radar',
+                data: {
+                    labels: ['Python', 'React', 'ML', 'AWS', 'SQL', 'Node.js'],
+                    datasets: [
+                        { label: 'Demand (Required)', data: [90, 80, 70, 60, 85, 75], backgroundColor: 'rgba(255, 107, 53, 0.2)', borderColor: '#FF6B35', pointBackgroundColor: '#FF6B35' },
+                        { label: 'Supply (Applicants)', data: [95, 85, 50, 40, 90, 60], backgroundColor: 'rgba(26, 86, 219, 0.2)', borderColor: '#1a56db', pointBackgroundColor: '#1a56db' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { r: { angleLines: { color: '#f1f5f9' }, grid: { color: '#f1f5f9' }, pointLabels: { font: { size: 12 } } } }
+                }
+            });
+
+            // 3. Analytics: Trend (Line)
+            const ctxTrend = document.getElementById('analyticsLineChart').getContext('2d');
+            new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: ['1', '5', '10', '15', '20', '25', '30'],
+                    datasets: [{
+                        label: 'New Applications',
+                        data: [12, 19, 45, 32, 65, 84, 110],
+                        borderColor: '#1a56db',
+                        backgroundColor: 'rgba(26, 86, 219, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
+
+            // 4. Analytics: Colleges (Doughnut)
+            const ctxColleges = document.getElementById('analyticsDoughnutChart').getContext('2d');
+            new Chart(ctxColleges, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tier 1 (IIT/NIT)', 'Tier 2', 'Others'],
+                    datasets: [{
+                        data: [25, 45, 30],
+                        backgroundColor: ['#1a56db', '#FF6B35', '#059669'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%' }
+            });
+
+            // 5. Analytics: Skills (Horizontal Bar)
+            const ctxSkills = document.getElementById('analyticsSkillsChart').getContext('2d');
+            new Chart(ctxSkills, {
+                type: 'bar',
+                data: {
+                    labels: ['Python', 'Java', 'React', 'SQL', 'C++', 'AWS'],
+                    datasets: [{
+                        label: '% of Applicants',
+                        data: [78, 65, 54, 45, 32, 28],
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 4
+                    }]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // 6. Analytics: Match Score (Bar)
+            const ctxMatch = document.getElementById('analyticsMatchChart').getContext('2d');
+            new Chart(ctxMatch, {
+                type: 'bar',
+                data: {
+                    labels: ['<60%', '60-70%', '70-80%', '80-90%', '>90%'],
+                    datasets: [{
+                        label: 'Candidates',
+                        data: [45, 120, 350, 210, 122],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#059669'],
+                        borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        });
+    </script>
+</body>
+</html>
